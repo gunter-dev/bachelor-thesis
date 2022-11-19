@@ -2,17 +2,23 @@ using UnityEngine;
 
 public class DisappearingGroundController : MonoBehaviour
 {
-    private SpriteRenderer _spriteRenderer;
+    private SpriteRenderer _childSpriteRenderer;
+    private BoxCollider2D _boxCollider;
+    private Transform _child;
     
     private const string PlayerTag = "Player";
 
     private float _time;
     private const float DisappearingTime = 2;
+    private const float ReappearingTime = 5;
     private bool _startedDisappearing;
+    private bool _disappeared;
 
     private void Start()
     {
-        _spriteRenderer = GetComponent<SpriteRenderer>();
+        _child = gameObject.transform.GetChild(0);
+        _childSpriteRenderer = _child.GetComponent<SpriteRenderer>();
+        _boxCollider = GetComponent<BoxCollider2D>();
     }
 
     private void Update()
@@ -21,11 +27,29 @@ public class DisappearingGroundController : MonoBehaviour
         {
             _time += Time.deltaTime;
             
-            Color spriteColor = _spriteRenderer.color;
-            spriteColor.a -= Time.deltaTime / DisappearingTime;
-            _spriteRenderer.color = spriteColor;
-            
-            if (_time >= DisappearingTime) Destroy(gameObject);
+            UpdateAlphaChannel(Time.deltaTime / DisappearingTime);
+
+            if (_time >= DisappearingTime)
+            {
+                _disappeared = true;
+                _startedDisappearing = false;
+                _time = 0;
+                _child.gameObject.SetActive(false);
+                _boxCollider.size = new Vector2(0, 0);
+            }
+        } 
+        else if (_disappeared)
+        {
+            _time += Time.deltaTime;
+
+            if (_time >= ReappearingTime)
+            {
+                _disappeared = false;
+                _time = 0;
+                _child.gameObject.SetActive(true);
+                _boxCollider.size = new Vector2(1, 1);
+                UpdateAlphaChannel(-1);
+            }
         }
     }
 
@@ -33,5 +57,12 @@ public class DisappearingGroundController : MonoBehaviour
     {
         if (col.gameObject.CompareTag(PlayerTag))
             _startedDisappearing = true;
+    }
+
+    private void UpdateAlphaChannel(float toDeduct)
+    {
+        Color spriteColor = _childSpriteRenderer.color;
+        spriteColor.a -= toDeduct;
+        _childSpriteRenderer.color = spriteColor;
     }
 }

@@ -38,9 +38,7 @@ public class ButtonController : MonoBehaviour
         _spriteRenderer.sprite = pressedTexture;
         
         foreach (var affectedObject in affectedGameObjects)
-        {
             affectedObject.SetActive(false);
-        }
     }
 
     private void HandleRelease()
@@ -48,9 +46,7 @@ public class ButtonController : MonoBehaviour
         _spriteRenderer.sprite = unpressedTexture;
         
         foreach (var affectedObject in affectedGameObjects)
-        {
             affectedObject.SetActive(true);
-        }
     }
     
     private void OnCollisionEnter2D()
