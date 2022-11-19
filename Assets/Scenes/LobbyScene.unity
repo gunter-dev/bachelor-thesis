@@ -169,18 +169,3 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   backgroundImage: {fileID: 2102352347025712575, guid: f0632a8847826584d876908546a7f03c, type: 3}
   cameraPrefab: {fileID: 7116807433753072485, guid: 1035d752def63c1488d1a69e3e0e87ba, type: 3}
-  fanAreaEffectorPrefab: {fileID: 6914687974281191990, guid: ff390dbe649d2b54c8b8c9e152e306ab, type: 3}
-  groundPrefab: {fileID: 1711469767362603412, guid: c42eb98f838aa3148a024b18f08b4468, type: 3}
-  rightSidePrefab: {fileID: 4268718312981360837, guid: 1584e55853ccf13479e4999bfe162d52, type: 3}
-  leftSidePrefab: {fileID: 2831890366734254203, guid: 148ee0d4460d9084fa6262b88349ffef, type: 3}
-  topPrefab: {fileID: 1485195510934250642, guid: 9a0633ff99f65a44a99ec2799cf53979, type: 3}
-  playerPrefab: {fileID: 568197938020647633, guid: 8d982393869c7724892f14a2ecf49173, type: 3}
-  acceleratorPrefab: {fileID: 4212714000004017708, guid: a33fabec0abd770428ce97b75ca5758b, type: 3}
-  fanPrefab: {fileID: 8024392834962801129, guid: cbf43ad26e7b85e4ea1f4008e28c6c35, type: 3}
-  gravityPrefab: {fileID: 8916371672195914078, guid: 56c14efcb76663346b8d32faac51d802, type: 3}
-  icePrefab: {fileID: 6356119072311434879, guid: c8c83bf5f2a590d4b8a43b1b63957caa, type: 3}
-  slimePrefab: {fileID: 8146029394951522601, guid: c1712ce068c31d14aaef20c0a7101900, type: 3}
-  spikePrefab: {fileID: 3150344178026491385, guid: d68bdd47cb7225c41abcb930b245d3d6, type: 3}
-  movablePrefab: {fileID: 1267364217858853981, guid: 7716255b56ebaf642a7c9f7d15cc21ae, type: 3}
-  disappearingPrefab: {fileID: 2518282990399872693, guid: 9554f36f6d6e7264895b26bf1b37feb0, type: 3}
-  movingPlatformPrefab: {fileID: 3618129477143215358, guid: 879b5879845d07c4698906fa724deafe, type: 3}

@@ -16,6 +16,7 @@ TagManager:
   - Accelerator
   - Side
   - Box
+  - Key Hole
   layers:
   - Default
   - TransparentFX

@@ -208,6 +208,10 @@ public class LevelGenerator : MonoBehaviour
                     Spawn("Key", new Vector3(x, flippedY, 1));
                     _keysAmount++;
                 }
+                else if (pixelColor.Equals(Color.FromArgb(255, 255, 255)))
+                {
+                    Spawn("Grounds/Key Hole", new Vector3(x, flippedY, 1));
+                }
             }
         }
 
