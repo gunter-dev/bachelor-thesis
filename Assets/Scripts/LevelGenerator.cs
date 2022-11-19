@@ -18,6 +18,9 @@ public class LevelGenerator : MonoBehaviour
     private int _mapWidth;
     private int _mapHeight;
     private int[] _raster;
+
+    private GameObject _player;
+    private int _keysAmount;
     
     [SerializeField] 
     private GameObject backgroundImage;
@@ -25,8 +28,8 @@ public class LevelGenerator : MonoBehaviour
     private ColorPrefab[] _colorMappings;
 
     public Camera cameraPrefab;
-    public GameObject fanAreaEffectorPrefab;
 
+    private const string PlayerTag = "Player";
     private const string FanTag = "Fan";
 
     // Start is called before the first frame update
@@ -150,6 +153,10 @@ public class LevelGenerator : MonoBehaviour
                 {
                     Spawn("Fan Area Effector", new Vector3(x, flippedY + 1, 1));
                     Spawn("Fan Area Effector", new Vector3(x, flippedY + 2, 1));
+                } 
+                else if (block.CompareTag(PlayerTag))
+                {
+                    _player = block;
                 }
             }
         }
@@ -186,8 +193,6 @@ public class LevelGenerator : MonoBehaviour
 
     void GenerateKeys()
     {
-        int keysAmount = 0;
-        
         for (int x = 0; x < _mapWidth; x++)
         {
             for (int y = 0; y < _mapHeight; y++)
@@ -201,10 +206,12 @@ public class LevelGenerator : MonoBehaviour
                 if (pixelColor.Equals(Color.FromArgb(0, 0, 0)))
                 {
                     Spawn("Key", new Vector3(x, flippedY, 1));
-                    keysAmount++;
+                    _keysAmount++;
                 }
             }
         }
+
+        _player.GetComponent<Player>().keysNeeded = _keysAmount;
     }
 
     void SpawnCamera()

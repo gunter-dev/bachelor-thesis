@@ -9,6 +9,8 @@ public class Player : MonoBehaviour
 
     private float _xMovement;
 
+    public int keysNeeded;
+
     private bool _movingRight = true;
     private bool _grounded = true;
     private bool _jumped;
