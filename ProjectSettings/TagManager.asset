@@ -17,6 +17,7 @@ TagManager:
   - Side
   - Box
   - Key Hole
+  - Button
   layers:
   - Default
   - TransparentFX

@@ -86,6 +86,7 @@ public class LevelGenerator : MonoBehaviour
                     GenerateMain();
                     break;
                 case ElectricityLayer:
+                    GenerateElectricity();
                     break;
                 case MovingPlatformLayer:
                     GenerateMovingPlatforms();
@@ -154,12 +155,41 @@ public class LevelGenerator : MonoBehaviour
                 {
                     Spawn("Fan Area Effector", new Vector3(x, flippedY + 1, 1));
                     Spawn("Fan Area Effector", new Vector3(x, flippedY + 2, 1));
-                } 
+                }
                 else if (block.CompareTag(PlayerTag))
                 {
                     _player = block;
                 }
             }
+        }
+    }
+
+    private void GenerateElectricity()
+    {
+        var blocks = new Dictionary<int, List<ElectricityInfo>>();
+        for (int x = 0; x < _mapWidth; x++)
+        {
+            for (int y = 0; y < _mapHeight; y++)
+            {
+                Color pixelColor = GetPixelColor(x, y);
+
+                if (pixelColor.A == 0) continue;
+                
+                int flippedY = _mapHeight - 1 - y;
+
+                if (blocks.ContainsKey(pixelColor.R)) blocks[pixelColor.R].Add(new ElectricityInfo(x, flippedY, pixelColor.B));
+                else blocks.Add(pixelColor.R, new List<ElectricityInfo> { new (x, flippedY, pixelColor.B) });
+            }
+        }
+
+        foreach (var block in blocks)
+        {
+            block.Value.Sort((l, r) => l.colorCode.CompareTo(r.colorCode));
+
+            var firstCoordinate = block.Value.Aggregate((l, r) => l.colorCode < r.colorCode ? l : r);
+
+            GameObject buttonObject = Spawn("Grounds/Button", new Vector3(firstCoordinate.x, firstCoordinate.y, 1));
+            buttonObject.GetComponent<ButtonController>().affectedBlocks = block.Value;
         }
     }
 
@@ -183,10 +213,11 @@ public class LevelGenerator : MonoBehaviour
 
         foreach (var platform in platforms)
         {
-            var firstCoordinate = platform.Value.Aggregate((l, r) => l.colorCode < r.colorCode ? l : r);
+            platform.Value.Sort((l, r) => l.colorCode.CompareTo(r.colorCode));
 
-            GameObject platformObject = Spawn("Grounds/Moving Platform",
-                new Vector3(firstCoordinate.x, firstCoordinate.y, 1));
+            PlatformInfo first = platform.Value[0];
+
+            GameObject platformObject = Spawn("Grounds/Moving Platform", new Vector3(first.x, first.y, 1));
             platformObject.GetComponent<MovingPlatformController>().path = platform.Value;
             platformObject.GetComponent<MovingPlatformController>().platformPrefab = GetPrefab("Grounds/Moving Platform");
         }
@@ -257,7 +288,6 @@ public class LevelGenerator : MonoBehaviour
 
     private static string GetFile(string fileName)
     {
-        Debug.Log(Directory.GetCurrentDirectory() + "\\" + fileName);
         return Directory.GetCurrentDirectory() + "\\" + fileName;
     }
 

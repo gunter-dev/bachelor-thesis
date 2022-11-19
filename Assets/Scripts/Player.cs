@@ -35,6 +35,7 @@ public class Player : MonoBehaviour
     private const string AcceleratorTag = "Accelerator";
     private const string SideTag = "Side";
     private const string BoxTag = "Box";
+    private const string ButtonTag = "Button";
 
     private void Awake()
     {
@@ -129,7 +130,8 @@ public class Player : MonoBehaviour
     {
         _grounded = col.gameObject.CompareTag(GroundTag) || col.gameObject.CompareTag(IceTag)
             || col.gameObject.CompareTag(SlimeTag) || col.gameObject.CompareTag(AcceleratorTag)
-            || col.gameObject.CompareTag(SideTag) || col.gameObject.CompareTag(BoxTag);
+            || col.gameObject.CompareTag(SideTag) || col.gameObject.CompareTag(BoxTag)
+            || col.gameObject.CompareTag(ButtonTag);
         _jumped = !_grounded;
         
         if (col.gameObject.CompareTag(GravityBlockTag)) HandleGravityChange();

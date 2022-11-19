@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -15,18 +14,12 @@ public class MovingPlatformController : MonoBehaviour
 
     private void Start()
     {
-        SortPathList();
         InstantiateOtherPlatformParts();
     }
 
     private void Update()
     {
         MoveBlock();
-    }
-
-    private void SortPathList()
-    {
-        path.Sort((l, r) => l.colorCode.CompareTo(r.colorCode));
     }
 
     private void InstantiateOtherPlatformParts()
