@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using Color = System.Drawing.Color;
 
@@ -33,7 +34,7 @@ public class LevelGenerator : MonoBehaviour
     private const string FanTag = "Fan";
 
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         InstantiateColorMappings();
         ImportImageFromFile();
@@ -43,7 +44,7 @@ public class LevelGenerator : MonoBehaviour
         RenderBackground();
     }
 
-    void InstantiateColorMappings()
+    private void InstantiateColorMappings()
     {
         _colorMappings = new ColorPrefab[]
         {
@@ -60,9 +61,9 @@ public class LevelGenerator : MonoBehaviour
         };
     }
 
-    void ImportImageFromFile()
+    private void ImportImageFromFile()
     {
-        _levelImage = Tiff.Open("C:\\Users\\lucky\\Bachelor Thesis\\Assets\\first-test-level.tif", "r");
+        _levelImage = Tiff.Open(GetFile("Assets\\first-test-level.tif"), "r");
         _mapWidth = _levelImage.GetField(TiffTag.IMAGEWIDTH)[0].ToInt();
         _mapHeight = _levelImage.GetField(TiffTag.IMAGELENGTH)[0].ToInt();
         
@@ -96,7 +97,7 @@ public class LevelGenerator : MonoBehaviour
         }
     }
 
-    void GenerateMain()
+    private void GenerateMain()
     {
         for (int x = 0; x < _mapWidth; x++)
         {
@@ -107,7 +108,7 @@ public class LevelGenerator : MonoBehaviour
         }
     }
 
-    void GenerateTile(int x, int y)
+    private void GenerateTile(int x, int y)
     {
         Color pixelColor = GetPixelColor(x, y);
 
@@ -191,7 +192,7 @@ public class LevelGenerator : MonoBehaviour
         }
     }
 
-    void GenerateKeys()
+    private void GenerateKeys()
     {
         for (int x = 0; x < _mapWidth; x++)
         {
@@ -218,7 +219,7 @@ public class LevelGenerator : MonoBehaviour
         _player.GetComponent<Player>().keysNeeded = _keysAmount;
     }
 
-    void SpawnCamera()
+    private void SpawnCamera()
     {
         // z is -10 because the camera needs to be position "in front" of everything else
         Vector3 cameraPosition = new Vector3((_mapWidth / 2f) - 0.5f, (_mapHeight / 2f) - 0.5f, -10);
@@ -227,7 +228,7 @@ public class LevelGenerator : MonoBehaviour
         mainCamera.orthographicSize = _mapHeight / 2f;
     }
 
-    void RenderBackground()
+    private void RenderBackground()
     {
         Vector3 position = new Vector3(_mapWidth / 2f, _mapHeight / 2f, 0);
         GameObject background = Instantiate(backgroundImage, position, Quaternion.identity);
@@ -244,17 +245,24 @@ public class LevelGenerator : MonoBehaviour
         return Color.FromArgb(alpha, red, green, blue);
     }
 
-    private GameObject GetPrefab(string pathName)
+    private static GameObject GetPrefab(string pathName)
     {
         return Resources.Load(pathName) as GameObject;
     }
 
-    private GameObject Spawn(string pathName, Vector3 position)
+    private static GameObject Spawn(string pathName, Vector3 position)
     {
         return Instantiate(GetPrefab(pathName), position, Quaternion.identity);
     }
 
-    void LogObject(Color obj)
+    private static string GetFile(string fileName)
+    {
+        Debug.Log(Directory.GetCurrentDirectory() + "\\" + fileName);
+        return Directory.GetCurrentDirectory() + "\\" + fileName;
+    }
+
+    // ReSharper disable once UnusedMember.Local
+    private void LogObject(Color obj)
     {
         foreach(PropertyDescriptor descriptor in TypeDescriptor.GetProperties(obj))
         {
