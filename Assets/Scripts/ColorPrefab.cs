@@ -5,11 +5,11 @@ using Color = System.Drawing.Color;
 public class ColorPrefab
 {
     public Color color;
-    public GameObject prefab;
+    public string pathToPrefab;
 
-    public ColorPrefab(Color color, GameObject prefab)
+    public ColorPrefab(Color color, string pathToPrefab)
     {
         this.color = color;
-        this.prefab = prefab;
+        this.pathToPrefab = pathToPrefab;
     }
 }

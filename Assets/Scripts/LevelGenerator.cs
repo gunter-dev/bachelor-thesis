@@ -26,9 +26,6 @@ public class LevelGenerator : MonoBehaviour
 
     public Camera cameraPrefab;
     public GameObject fanAreaEffectorPrefab;
-    public GameObject groundPrefab, rightSidePrefab, leftSidePrefab, topPrefab,
-        playerPrefab, acceleratorPrefab, fanPrefab, gravityPrefab, icePrefab,
-        slimePrefab, spikePrefab, movablePrefab, disappearingPrefab, movingPlatformPrefab;
 
     private const string FanTag = "Fan";
 
@@ -47,16 +44,16 @@ public class LevelGenerator : MonoBehaviour
     {
         _colorMappings = new ColorPrefab[]
         {
-            new (Color.FromArgb(0, 0, 0), groundPrefab),
-            new (Color.FromArgb(255, 0, 0), playerPrefab),
-            new (Color.FromArgb(255, 255, 255), acceleratorPrefab),
-            new (Color.FromArgb(0, 255, 0), slimePrefab),
-            new (Color.FromArgb(0, 255, 255), icePrefab),
-            new (Color.FromArgb(255, 0, 255), spikePrefab),
-            new (Color.FromArgb(0, 0, 255), gravityPrefab),
-            new (Color.FromArgb(255, 255, 0), fanPrefab),
-            new (Color.FromArgb(100, 0, 0), movablePrefab),
-            new (Color.FromArgb(100, 100, 0), disappearingPrefab)
+            new (Color.FromArgb(0, 0, 0), "Grounds/Grass Ground"),
+            new (Color.FromArgb(255, 0, 0), "Player"),
+            new (Color.FromArgb(255, 255, 255), "Grounds/Accelerator"),
+            new (Color.FromArgb(0, 255, 0), "Grounds/Slime"),
+            new (Color.FromArgb(0, 255, 255), "Grounds/Ice"),
+            new (Color.FromArgb(255, 0, 255), "Spike"),
+            new (Color.FromArgb(0, 0, 255), "Grounds/Gravity"),
+            new (Color.FromArgb(255, 255, 0), "Grounds/Fan"),
+            new (Color.FromArgb(100, 0, 0), "Grounds/Movable Grass"),
+            new (Color.FromArgb(100, 100, 0), "Grounds/Disappearing Ground")
         };
     }
 
@@ -143,18 +140,17 @@ public class LevelGenerator : MonoBehaviour
                 else if (!left)   Instantiate(rightSidePrefab, new Vector3(x, y, 1), Quaternion.identity, transform);
                 else if (!bottom) Instantiate(topPrefab, new Vector3(x, y, 1), Quaternion.identity, transform);
                 else */
-                Instantiate(groundPrefab, new Vector3(x, flippedY, 1), Quaternion.identity, transform);
+                Spawn("Grounds/Grass Ground", new Vector3(x, flippedY, 1));
             }
             else if (colorMapping.color.Equals(pixelColor))
             {
-                if (colorMapping.prefab.CompareTag(FanTag))
-                {
-                    Instantiate(fanAreaEffectorPrefab, new Vector3(x, flippedY + 1, 1), Quaternion.identity);
-                    Instantiate(fanAreaEffectorPrefab, new Vector3(x, flippedY + 2, 1), Quaternion.identity);
-                }
+                GameObject block = Spawn(colorMapping.pathToPrefab, new Vector3(x, flippedY, 1));
                 
-                Vector3 position = new Vector3(x, flippedY, 1);
-                Instantiate(colorMapping.prefab, position, Quaternion.identity, transform);
+                if (block.CompareTag(FanTag))
+                {
+                    Spawn("Fan Area Effector", new Vector3(x, flippedY + 1, 1));
+                    Spawn("Fan Area Effector", new Vector3(x, flippedY + 2, 1));
+                }
             }
         }
     }
@@ -180,10 +176,11 @@ public class LevelGenerator : MonoBehaviour
         foreach (var platform in platforms)
         {
             var firstCoordinate = platform.Value.Aggregate((l, r) => l.colorCode < r.colorCode ? l : r);
-            
-            GameObject platformObject = Instantiate(movingPlatformPrefab, new Vector3(firstCoordinate.x, firstCoordinate.y, 1), Quaternion.identity);
+
+            GameObject platformObject = Spawn("Grounds/Moving Platform",
+                new Vector3(firstCoordinate.x, firstCoordinate.y, 1));
             platformObject.GetComponent<MovingPlatformController>().path = platform.Value;
-            platformObject.GetComponent<MovingPlatformController>().platformPrefab = movingPlatformPrefab;
+            platformObject.GetComponent<MovingPlatformController>().platformPrefab = GetPrefab("Grounds/Moving Platform");
         }
     }
 
@@ -199,13 +196,13 @@ public class LevelGenerator : MonoBehaviour
 
                 if (pixelColor.A == 0) continue;
 
+                int flippedY = _mapHeight - 1 - y;
+                
                 if (pixelColor.Equals(Color.FromArgb(0, 0, 0)))
                 {
-                    // TODO: hell yeah
+                    Spawn("Key", new Vector3(x, flippedY, 1));
                     keysAmount++;
                 }
-                
-                int flippedY = _mapHeight - 1 - y;
             }
         }
     }
@@ -234,6 +231,16 @@ public class LevelGenerator : MonoBehaviour
         int green = Tiff.GetG(_raster[offset]);
         int blue = Tiff.GetB(_raster[offset]);
         return Color.FromArgb(alpha, red, green, blue);
+    }
+
+    private GameObject GetPrefab(string pathName)
+    {
+        return Resources.Load(pathName) as GameObject;
+    }
+
+    private GameObject Spawn(string pathName, Vector3 position)
+    {
+        return Instantiate(GetPrefab(pathName), position, Quaternion.identity);
     }
 
     void LogObject(Color obj)
