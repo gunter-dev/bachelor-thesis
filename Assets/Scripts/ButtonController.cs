@@ -7,7 +7,6 @@ public class ButtonController : MonoBehaviour
     public List<GameObject> affectedGameObjects;
 
     private SpriteRenderer _spriteRenderer;
-    private BoxCollider2D _boxCollider;
 
     public Sprite unpressedTexture;
     public Sprite pressedTexture;
@@ -16,7 +15,6 @@ public class ButtonController : MonoBehaviour
     private void Start()
     {
         _spriteRenderer = GetComponent<SpriteRenderer>();
-        _boxCollider = GetComponent<BoxCollider2D>();
         InstantiateAffectedBlocks();
     }
 
