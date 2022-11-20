@@ -36,6 +36,7 @@ public class Player : MonoBehaviour
     private const string SideTag = "Side";
     private const string BoxTag = "Box";
     private const string ButtonTag = "Button";
+    private const string ExitTag = "Exit";
 
     private void Awake()
     {
@@ -128,19 +129,27 @@ public class Player : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D col)
     {
-        _grounded = col.gameObject.CompareTag(GroundTag) || col.gameObject.CompareTag(IceTag)
-            || col.gameObject.CompareTag(SlimeTag) || col.gameObject.CompareTag(AcceleratorTag)
-            || col.gameObject.CompareTag(SideTag) || col.gameObject.CompareTag(BoxTag)
-            || col.gameObject.CompareTag(ButtonTag);
-        _jumped = !_grounded;
+        Vector3 contactPoint = col.contacts[0].point;
+        Vector3 center = col.collider.bounds.center;
+
+        if (contactPoint.y > center.y && !_reversedGravity || contactPoint.y < center.y && _reversedGravity)
+        {
+            _grounded = col.gameObject.CompareTag(GroundTag) || col.gameObject.CompareTag(IceTag)
+                                                             || col.gameObject.CompareTag(SlimeTag) ||
+                                                             col.gameObject.CompareTag(AcceleratorTag)
+                                                             || col.gameObject.CompareTag(SideTag) ||
+                                                             col.gameObject.CompareTag(BoxTag)
+                                                             || col.gameObject.CompareTag(ButtonTag);
+            _jumped = !_grounded;
+
+            if (col.gameObject.CompareTag(GravityBlockTag)) HandleGravityChange();
+
+            _sliding = col.gameObject.CompareTag(IceTag);
+            _slowedDown = col.gameObject.CompareTag(SlimeTag);
+            _onAccelerator = col.gameObject.CompareTag(AcceleratorTag);
+        }
         
-        if (col.gameObject.CompareTag(GravityBlockTag)) HandleGravityChange();
-        
-        _sliding = col.gameObject.CompareTag(IceTag);
-        _slowedDown = col.gameObject.CompareTag(SlimeTag);
-        _onAccelerator = col.gameObject.CompareTag(AcceleratorTag);
-        
-        if (col.gameObject.CompareTag(SpikeTag)) KillPlayer();
+        if (col.gameObject.CompareTag(SpikeTag) || col.gameObject.CompareTag(ExitTag)) KillPlayer();
     }
 
     private void HandleGravityChange()

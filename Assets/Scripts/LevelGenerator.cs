@@ -57,7 +57,8 @@ public class LevelGenerator : MonoBehaviour
             new (Color.FromArgb(0, 0, 255), "Grounds/Gravity"),
             new (Color.FromArgb(255, 255, 0), "Grounds/Fan"),
             new (Color.FromArgb(100, 0, 0), "Grounds/Movable Grass"),
-            new (Color.FromArgb(100, 100, 0), "Grounds/Disappearing Ground")
+            new (Color.FromArgb(100, 100, 0), "Grounds/Disappearing Ground"),
+            new (Color.FromArgb(100, 100, 100), "Exit")
         };
     }
 

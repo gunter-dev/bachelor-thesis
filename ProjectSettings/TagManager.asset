@@ -18,6 +18,7 @@ TagManager:
   - Box
   - Key Hole
   - Button
+  - Exit
   layers:
   - Default
   - TransparentFX
