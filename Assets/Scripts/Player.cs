@@ -93,7 +93,7 @@ public class Player : MonoBehaviour
         _playerBody.AddForce(
             _sideGravity
                 ? new Vector2(JumpForce * (_gravityLeft ? -1 : 1), 0f)
-                : new Vector2(0f, JumpForce * (_reversedGravity ? -1 : 1)), 
+                : new Vector2(0f, JumpForce * (_reversedGravity ? -1 : 1) * (_slowedDown ? 0.5f : 1)), 
             ForceMode2D.Impulse);
     }
     

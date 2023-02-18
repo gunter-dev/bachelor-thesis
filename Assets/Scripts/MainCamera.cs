@@ -13,15 +13,14 @@ public class MainCamera : MonoBehaviour
     private const float AppearingTime = 2;
     
     private float _defaultCameraSize;
+    private float _currentCameraSize;
 
     private Camera _camera;
 
     private bool _deathScreenVisible;
 
-    private float _minX;
-    private float _maxX;
-    private float _minY;
-    private float _maxY;
+    public float mapHeight;
+    public float mapWidth;
 
     public GameObject deathScreenTintPrefab;
     private SpriteRenderer _deathScreenTintSpriteRenderer;
@@ -47,17 +46,20 @@ public class MainCamera : MonoBehaviour
         
         ChangeSizeOnScroll();
         FocusPlayer();
+
+        _currentCameraSize = _camera.orthographicSize;
     }
 
     private void InstantiateRedTint()
     {
-        Vector3 position = new Vector3((MapStartingCoordinate + (2 * _defaultCameraSize) * AspectRatio) / 2f,
-            (MapStartingCoordinate + 2 * _defaultCameraSize) / 2f, 0);
-                
+        Vector3 position = new Vector3(_cameraPosition.x, _cameraPosition.y, 0);
+        
         GameObject deathScreenTint = Instantiate(deathScreenTintPrefab, position, Quaternion.identity);
-        deathScreenTint.transform.localScale = new Vector2(160, 160);
 
         _deathScreenTintSpriteRenderer = deathScreenTint.GetComponent<SpriteRenderer>();
+        Vector3 tintSize = _deathScreenTintSpriteRenderer.bounds.size;
+        
+        deathScreenTint.transform.localScale = new Vector2(2 * _currentCameraSize * AspectRatio / tintSize.x, 2 * _currentCameraSize / tintSize.y);
 
         UpdateRedTintOpacity(0);
 
@@ -76,9 +78,9 @@ public class MainCamera : MonoBehaviour
 
     private void ChangeSizeOnScroll()
     {
-        if (Input.mouseScrollDelta.y > 0 && _camera.orthographicSize >= 5) 
+        if (Input.mouseScrollDelta.y > 0 && _currentCameraSize >= 5) 
             _camera.orthographicSize -= CameraSizeChange;
-        else if (Input.mouseScrollDelta.y < 0 && _camera.orthographicSize < _defaultCameraSize) 
+        else if (Input.mouseScrollDelta.y < 0 && _currentCameraSize < _defaultCameraSize) 
             _camera.orthographicSize += CameraSizeChange;
     }
 
@@ -86,25 +88,23 @@ public class MainCamera : MonoBehaviour
     {
         _cameraPosition = transform.position;
 
-        var currentCameraSize = _camera.orthographicSize;
-        
-        _minX = MapStartingCoordinate + currentCameraSize * AspectRatio; 
-        _maxX = MapStartingCoordinate + (2 * _defaultCameraSize - currentCameraSize) * AspectRatio;
-        
-        if (_playerPosition.position.x < _minX)
-            _cameraPosition.x = _minX;
-        else if (_playerPosition.position.x > _maxX)
-            _cameraPosition.x = _maxX;
+        var minX = MapStartingCoordinate + _currentCameraSize * AspectRatio;
+        var maxX = MapStartingCoordinate + mapWidth - _currentCameraSize * AspectRatio;
+
+        if (_playerPosition.position.x < minX)
+            _cameraPosition.x = minX;
+        else if (_playerPosition.position.x > maxX)
+            _cameraPosition.x = maxX;
         else
             _cameraPosition.x = _playerPosition.position.x;
 
-        _minY = MapStartingCoordinate + currentCameraSize;
-        _maxY = MapStartingCoordinate + 2 * _defaultCameraSize - currentCameraSize;
-        
-        if (_playerPosition.position.y < _minY)
-            _cameraPosition.y = _minY;
-        else if (_playerPosition.position.y > _maxY)
-            _cameraPosition.y = _maxY;
+        var minY = MapStartingCoordinate + _currentCameraSize;
+        var maxY = MapStartingCoordinate + mapHeight - _currentCameraSize;
+
+        if (_playerPosition.position.y < minY)
+            _cameraPosition.y = minY;
+        else if (_playerPosition.position.y > maxY)
+            _cameraPosition.y = maxY;
         else
             _cameraPosition.y = _playerPosition.position.y;
         

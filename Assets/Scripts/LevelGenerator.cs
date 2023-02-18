@@ -64,7 +64,7 @@ public class LevelGenerator : MonoBehaviour
 
     private void ImportImageFromFile()
     {
-        _levelImage = Tiff.Open(GetFile("Assets\\first-test-level.tif"), "r");
+        _levelImage = Tiff.Open(GetFile("Assets\\first-test-level-69.tif"), "r");
         _mapWidth = _levelImage.GetField(TiffTag.IMAGEWIDTH)[0].ToInt();
         _mapHeight = _levelImage.GetField(TiffTag.IMAGELENGTH)[0].ToInt();
         
@@ -258,6 +258,8 @@ public class LevelGenerator : MonoBehaviour
         
         Camera mainCamera = Instantiate(cameraPrefab, cameraPosition, Quaternion.identity);
         mainCamera.orthographicSize = _mapHeight / 2f;
+        mainCamera.GetComponent<MainCamera>().mapHeight = _mapHeight;
+        mainCamera.GetComponent<MainCamera>().mapWidth = _mapWidth;
     }
 
     private void RenderBackground()
