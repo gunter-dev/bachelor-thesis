@@ -167,5 +167,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 21111db4b93871e40a8c58adcdf1b25a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  backgroundImage: {fileID: 2102352347025712575, guid: f0632a8847826584d876908546a7f03c, type: 3}
-  cameraPrefab: {fileID: 7116807433753072485, guid: 1035d752def63c1488d1a69e3e0e87ba, type: 3}

@@ -6,6 +6,7 @@ using System.Linq;
 using Color = System.Drawing.Color;
 
 using BitMiracle.LibTiff.Classic;
+using GameObject = UnityEngine.GameObject;
 
 public class LevelGenerator : MonoBehaviour
 {
@@ -14,34 +15,29 @@ public class LevelGenerator : MonoBehaviour
     private const string MovingPlatformLayer = "movingPlatforms";
     private const string KeysLayer = "keys";
 
-    private Tiff _levelImage;
+    private const string PlayerTag = "Player";
+    private const string FanTag = "Fan";
     
+    private Tiff _levelImage;
+    private string _pathToLevelImage;
+
     private int _mapWidth;
     private int _mapHeight;
     private int[] _raster;
 
     private GameObject _player;
     private int _keysAmount;
-    
-    [SerializeField] 
-    private GameObject backgroundImage;
 
     private ColorPrefab[] _colorMappings;
-
-    public Camera cameraPrefab;
-
-    private const string PlayerTag = "Player";
-    private const string FanTag = "Fan";
-
+    
     // Start is called before the first frame update
-    private void Start()
+    public void Start()
     {
         InstantiateColorMappings();
         ImportImageFromFile();
         GenerateLevel();
         
         SpawnCamera();
-        RenderBackground();
     }
 
     private void InstantiateColorMappings()
@@ -64,7 +60,9 @@ public class LevelGenerator : MonoBehaviour
 
     private void ImportImageFromFile()
     {
-        _levelImage = Tiff.Open(GetFile("Assets\\first-test-level-69.tif"), "r");
+        _pathToLevelImage ??= GetFile("Assets\\first-test-level-69.tif");
+
+        _levelImage = Tiff.Open(_pathToLevelImage, "r");
         _mapWidth = _levelImage.GetField(TiffTag.IMAGEWIDTH)[0].ToInt();
         _mapHeight = _levelImage.GetField(TiffTag.IMAGELENGTH)[0].ToInt();
         
@@ -255,18 +253,13 @@ public class LevelGenerator : MonoBehaviour
     {
         // z is -10 because the camera needs to be position "in front" of everything else
         Vector3 cameraPosition = new Vector3((_mapWidth / 2f) - 0.5f, (_mapHeight / 2f) - 0.5f, -10);
+
+        Camera mainCamera = Resources.Load<Camera>("Main Camera");
+        mainCamera = Instantiate(mainCamera, cameraPosition, Quaternion.identity);
         
-        Camera mainCamera = Instantiate(cameraPrefab, cameraPosition, Quaternion.identity);
         mainCamera.orthographicSize = _mapHeight / 2f;
         mainCamera.GetComponent<MainCamera>().mapHeight = _mapHeight;
         mainCamera.GetComponent<MainCamera>().mapWidth = _mapWidth;
-    }
-
-    private void RenderBackground()
-    {
-        Vector3 position = new Vector3(_mapWidth / 2f, _mapHeight / 2f, 0);
-        GameObject background = Instantiate(backgroundImage, position, Quaternion.identity);
-        background.transform.localScale = new Vector2(7, 7);
     }
 
     private Color GetPixelColor(int x, int y)
@@ -292,6 +285,11 @@ public class LevelGenerator : MonoBehaviour
     private static string GetFile(string fileName)
     {
         return Directory.GetCurrentDirectory() + "\\" + fileName;
+    }
+
+    public void SetPathToLevelImage(string path)
+    {
+        _pathToLevelImage = path;
     }
 
     // ReSharper disable once UnusedMember.Local
