@@ -20,23 +20,6 @@ public class Player : MonoBehaviour
     private bool _sliding;
     private bool _slowedDown;
     private bool _onAccelerator;
-    
-    private const float MoveForce = 10f;
-    private const float JumpForce = 10f;
-    private const float SlidingSpeed = 0.3f;
-    private const float SlowedDownSpeed = 0.4f;
-    private const float AcceleratorPlusSpeed = 0.6f;
-    
-    private const string GroundTag = "Ground";
-    private const string IceTag = "Ice";
-    private const string SlimeTag = "Slime";
-    private const string GravityBlockTag = "Gravity";
-    private const string SpikeTag = "Spike";
-    private const string AcceleratorTag = "Accelerator";
-    private const string SideTag = "Side";
-    private const string BoxTag = "Box";
-    private const string ButtonTag = "Button";
-    private const string ExitTag = "Exit";
 
     private void Awake()
     {
@@ -57,15 +40,15 @@ public class Player : MonoBehaviour
     {
         _xMovement = MovementSpeed();
 
-        transform.position += Time.deltaTime * MoveForce * new Vector3(_xMovement, 0f, 0f);
+        transform.position += Time.deltaTime * Constants.MoveForce * new Vector3(_xMovement, 0f, 0f);
 
         if (_sideGravity)
         {
-            var yMovement = Input.GetAxisRaw("Vertical");
-            transform.position += Time.deltaTime * MoveForce * new Vector3(0f, yMovement, 0f);
+            var yMovement = Input.GetAxisRaw(Constants.Vertical);
+            transform.position += Time.deltaTime * Constants.MoveForce * new Vector3(0f, yMovement, 0f);
         }
 
-        if (Input.GetButtonDown("Jump") && _grounded) PlayerJump();
+        if (Input.GetButtonDown(Constants.Jump) && _grounded) PlayerJump();
         if (Input.GetKeyDown(KeyCode.O))
         {
             _sideGravity = true;
@@ -78,13 +61,13 @@ public class Player : MonoBehaviour
     {
         if (_sideGravity) return 0;
         if (_sliding)
-            return Math.Abs(Input.GetAxis("Horizontal")) < SlidingSpeed
-                ? SlidingSpeed * (_movingRight ? 1 : -1)
-                : Input.GetAxis("Horizontal");
+            return Math.Abs(Input.GetAxis(Constants.Horizontal)) < Constants.SlidingSpeed
+                ? Constants.SlidingSpeed * (_movingRight ? 1 : -1)
+                : Input.GetAxis(Constants.Horizontal);
 
-        if (_onAccelerator) return Input.GetAxisRaw("Horizontal") + AcceleratorPlusSpeed;
+        if (_onAccelerator) return Input.GetAxisRaw(Constants.Horizontal) + Constants.AcceleratorPlusSpeed;
 
-        return Input.GetAxisRaw("Horizontal") * (_slowedDown ? SlowedDownSpeed : 1);
+        return Input.GetAxisRaw(Constants.Horizontal) * (_slowedDown ? Constants.SlowedDownSpeed : 1);
     }
 
     private void PlayerJump()
@@ -92,8 +75,8 @@ public class Player : MonoBehaviour
         _grounded = false;
         _playerBody.AddForce(
             _sideGravity
-                ? new Vector2(JumpForce * (_gravityLeft ? -1 : 1), 0f)
-                : new Vector2(0f, JumpForce * (_reversedGravity ? -1 : 1) * (_slowedDown ? 0.5f : 1)), 
+                ? new Vector2(Constants.JumpForce * (_gravityLeft ? -1 : 1), 0f)
+                : new Vector2(0f, Constants.JumpForce * (_reversedGravity ? -1 : 1) * (_slowedDown ? 0.5f : 1)), 
             ForceMode2D.Impulse);
     }
     
@@ -118,13 +101,13 @@ public class Player : MonoBehaviour
 
     private void AnimateGrounded()
     {
-        _animator.Play(Input.GetAxisRaw("Horizontal") == 0 ? "Idle" : "Run");
+        _animator.Play(Input.GetAxisRaw(Constants.Horizontal) == 0 ? Constants.Idle : Constants.Run);
     }
 
     private void AnimateJump()
     {
         _jumped = true;
-        _animator.Play("Jump");
+        _animator.Play(Constants.Jump);
     }
 
     private void OnCollisionEnter2D(Collision2D col)
@@ -134,22 +117,22 @@ public class Player : MonoBehaviour
 
         if (contactPoint.y > center.y && !_reversedGravity || contactPoint.y < center.y && _reversedGravity)
         {
-            _grounded = col.gameObject.CompareTag(GroundTag) || col.gameObject.CompareTag(IceTag)
-                                                             || col.gameObject.CompareTag(SlimeTag) ||
-                                                             col.gameObject.CompareTag(AcceleratorTag)
-                                                             || col.gameObject.CompareTag(SideTag) ||
-                                                             col.gameObject.CompareTag(BoxTag)
-                                                             || col.gameObject.CompareTag(ButtonTag);
+            _grounded = col.gameObject.CompareTag(Constants.GroundTag) || col.gameObject.CompareTag(Constants.IceTag)
+                                                             || col.gameObject.CompareTag(Constants.SlimeTag) ||
+                                                             col.gameObject.CompareTag(Constants.AcceleratorTag)
+                                                             || col.gameObject.CompareTag(Constants.SideTag) ||
+                                                             col.gameObject.CompareTag(Constants.BoxTag)
+                                                             || col.gameObject.CompareTag(Constants.ButtonTag);
             _jumped = !_grounded;
 
-            if (col.gameObject.CompareTag(GravityBlockTag)) HandleGravityChange();
+            if (col.gameObject.CompareTag(Constants.GravityBlockTag)) HandleGravityChange();
 
-            _sliding = col.gameObject.CompareTag(IceTag);
-            _slowedDown = col.gameObject.CompareTag(SlimeTag);
-            _onAccelerator = col.gameObject.CompareTag(AcceleratorTag);
+            _sliding = col.gameObject.CompareTag(Constants.IceTag);
+            _slowedDown = col.gameObject.CompareTag(Constants.SlimeTag);
+            _onAccelerator = col.gameObject.CompareTag(Constants.AcceleratorTag);
         }
         
-        if (col.gameObject.CompareTag(SpikeTag) || col.gameObject.CompareTag(ExitTag)) KillPlayer();
+        if (col.gameObject.CompareTag(Constants.SpikeTag) || col.gameObject.CompareTag(Constants.ExitTag)) KillPlayer();
     }
 
     private void HandleGravityChange()

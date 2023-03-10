@@ -24,9 +24,11 @@ public class ButtonController : MonoBehaviour
         { 
             if (block.colorCode != 0)
             {
-                affectedGameObjects.Add(
-                Instantiate(Resources.Load("Grounds/Grass Ground") as GameObject, new Vector3(block.x, block.y, 1), Quaternion.identity)
-                );
+                Vector3 position = new Vector3(block.x, block.y, 1);
+                GameObject affected = Resources.Load<GameObject>("Grounds/Grass Ground");
+                affected = Instantiate(affected, position, Quaternion.identity);
+                
+                affectedGameObjects.Add(affected);
             }
         }
     }

@@ -9,9 +9,6 @@ public class MovingPlatformController : MonoBehaviour
 
     private int _nextIndex;
 
-    private const float PlatformSpeed = 5;
-    private const float DistanceTolerance = 0.01f;
-
     private void Start()
     {
         InstantiateOtherPlatformParts();
@@ -41,9 +38,9 @@ public class MovingPlatformController : MonoBehaviour
     {
         Vector2 nextPoint = new Vector2(path[_nextIndex].x, path[_nextIndex].y);
 
-        transform.position = Vector2.MoveTowards(transform.position, nextPoint, PlatformSpeed * Time.deltaTime);
+        transform.position = Vector2.MoveTowards(transform.position, nextPoint, Constants.PlatformSpeed * Time.deltaTime);
 
-        if (Vector2.Distance(transform.position, nextPoint) < DistanceTolerance)
+        if (Vector2.Distance(transform.position, nextPoint) < Constants.DistanceTolerance)
             IncrementIndex();
     }
 

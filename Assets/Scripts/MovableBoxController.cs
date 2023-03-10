@@ -6,11 +6,6 @@ public class MovableBoxController : MonoBehaviour
 
     private bool _reversedGravity;
     private bool _onAccelerator;
-    
-    private const float AcceleratorSpeed = 1.6f;
-    
-    private const string GravityBlockTag = "Gravity";
-    private const string AcceleratorTag = "Accelerator";
 
     // Update is called once per frame
     private void Update()
@@ -25,8 +20,8 @@ public class MovableBoxController : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D col)
     {
-        _xMovement = col.gameObject.CompareTag(AcceleratorTag) ? AcceleratorSpeed : 0;
-        if (col.gameObject.CompareTag(GravityBlockTag)) HandleGravityChange();
+        _xMovement = col.gameObject.CompareTag(Constants.AcceleratorTag) ? Constants.AcceleratorSpeed : 0;
+        if (col.gameObject.CompareTag(Constants.GravityBlockTag)) HandleGravityChange();
     }
 
     private void HandleGravityChange()

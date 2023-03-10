@@ -16,7 +16,6 @@ public class OptionsController : MonoBehaviour
     {
         _availableResolutions = Screen.resolutions;
         int currentResolutionIndex = 0;
-        string currentResolution = GetStringFromResolution(Screen.currentResolution);
 
         List<string> resolutionOptions = new List<string>();
         for (int i = 0; i < _availableResolutions.Length; i++)
@@ -24,13 +23,8 @@ public class OptionsController : MonoBehaviour
             string resolution = GetStringFromResolution(_availableResolutions[i]);
             resolutionOptions.Add(resolution);
             
-            // if (resolution == currentResolution)
-            //     currentResolutionIndex = i;
-
             if (_availableResolutions[i].width == Screen.width && _availableResolutions[i].height == Screen.height)
-            {
                 currentResolutionIndex = i;
-            }
         }
 
         resolutionDropdown.ClearOptions();

@@ -10,14 +10,6 @@ using GameObject = UnityEngine.GameObject;
 
 public class LevelGenerator : MonoBehaviour
 {
-    private const string MainLayer = "main";
-    private const string ElectricityLayer = "electricity";
-    private const string MovingPlatformLayer = "movingPlatforms";
-    private const string KeysLayer = "keys";
-
-    private const string PlayerTag = "Player";
-    private const string FanTag = "Fan";
-    
     private Tiff _levelImage;
     private string _pathToLevelImage;
 
@@ -81,16 +73,16 @@ public class LevelGenerator : MonoBehaviour
             string pageName = _levelImage.GetField(TiffTag.PAGENAME)[0].ToString();
             switch (pageName)
             {
-                case MainLayer:
+                case Constants.MainLayer:
                     GenerateMain();
                     break;
-                case ElectricityLayer:
+                case Constants.ElectricityLayer:
                     GenerateElectricity();
                     break;
-                case MovingPlatformLayer:
+                case Constants.MovingPlatformLayer:
                     GenerateMovingPlatforms();
                     break;
-                case KeysLayer:
+                case Constants.KeysLayer:
                     GenerateKeys();
                     break;
             }
@@ -150,12 +142,12 @@ public class LevelGenerator : MonoBehaviour
             {
                 GameObject block = Spawn(colorMapping.pathToPrefab, new Vector3(x, flippedY, 1));
                 
-                if (block.CompareTag(FanTag))
+                if (block.CompareTag(Constants.FanTag))
                 {
                     Spawn("Fan Area Effector", new Vector3(x, flippedY + 1, 1));
                     Spawn("Fan Area Effector", new Vector3(x, flippedY + 2, 1));
                 }
-                else if (block.CompareTag(PlayerTag))
+                else if (block.CompareTag(Constants.PlayerTag))
                 {
                     _player = block;
                 }

@@ -6,8 +6,6 @@ public class DisappearingGroundController : MonoBehaviour
     private BoxCollider2D _boxCollider;
     private Transform _child;
     
-    private const string PlayerTag = "Player";
-
     private float _time;
     private const float DisappearingTime = 2;
     private const float ReappearingTime = 5;
@@ -55,7 +53,7 @@ public class DisappearingGroundController : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D col)
     {
-        if (col.gameObject.CompareTag(PlayerTag))
+        if (col.gameObject.CompareTag(Constants.PlayerTag))
             _startedDisappearing = true;
     }
 
