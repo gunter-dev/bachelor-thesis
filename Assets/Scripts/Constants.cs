@@ -22,10 +22,10 @@ public static class Constants
     
     // Camera
     public const float MapStartingCoordinate = -0.5f;
-    public const float AspectRatio = 16f / 9f; // 16:9 is the used aspect ratio
     public const float CameraSizeChange = 0.3f;
     public const float MaxRedTintOpacity = 0.7f;
     public const float AppearingTime = 2;
+    public const float CreateLevelPanelScreenPercentage = 100 / 1080f;
     
     // Player
     public const float MoveForce = 10f;
@@ -47,4 +47,14 @@ public static class Constants
     public const float AcceleratorSpeed = 1.6f;
     public const float PlatformSpeed = 5;
     public const float DistanceTolerance = 0.01f;
+    
+    // Scenes
+    public const string Game = "Scenes/LobbyScene";
+    public const string MainMenu = "Scenes/MainMenu";
+    public const string CreateLevelScene = "Scenes/CreateLevelScene";
+    public const string ErrorScene = "Scenes/ErrorScene";
+    
+    // Minimal resolution
+    public const int MinimalWidth = 1280;
+    public const int MinimalHeight = 720;
 }

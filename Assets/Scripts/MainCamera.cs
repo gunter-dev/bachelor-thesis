@@ -99,6 +99,8 @@ public class MainCamera : MonoBehaviour
         var minY = Constants.MapStartingCoordinate + _currentCameraSize;
         var maxY = Constants.MapStartingCoordinate + mapHeight - _currentCameraSize;
 
+        if (GlobalVariables.createLevelMode) minY -= CreateLevelPanelSize();
+
         if (_playerPosition.position.y < minY)
             _cameraPosition.y = minY;
         else if (_playerPosition.position.y > maxY)
@@ -112,8 +114,8 @@ public class MainCamera : MonoBehaviour
     private void RenderBackground()
     {
         Vector3 position = new Vector3(
-            (mapWidth / 2) + Constants.MapStartingCoordinate, 
-            (mapHeight / 2) + Constants.MapStartingCoordinate, 
+            (mapWidth / 2) + Constants.MapStartingCoordinate,
+            (mapHeight / 2) + Constants.MapStartingCoordinate,
             0
             );
 
@@ -124,5 +126,10 @@ public class MainCamera : MonoBehaviour
         Vector3 backgroundSize = backgroundSpriteRenderer.bounds.size;
         
         background.transform.localScale = new Vector2(mapWidth / backgroundSize.x, mapHeight / backgroundSize.y);
+    }
+
+    private float CreateLevelPanelSize()
+    {
+        return _currentCameraSize * 2 * Constants.CreateLevelPanelScreenPercentage;
     }
 }

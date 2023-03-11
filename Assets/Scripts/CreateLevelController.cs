@@ -1,18 +1,24 @@
-using UnityEditor;
 using UnityEngine;
+using AnotherFileBrowser.Windows;
+using UnityEngine.SceneManagement;
 
 public class CreateLevelController : MonoBehaviour
 {
-    private string _selectedFilePath;
-    
     public void OpenFileSelector()
     {
-        _selectedFilePath = EditorUtility.OpenFilePanel("Select a TIFF image", "", "tif");
+        var bp = new BrowserProperties
+        {
+            title = "Select a TIF image",
+            initialDir = "",
+            filter = "TIF files (*.tif)|*.tif",
+            filterIndex = 0
+        };
 
-        GameObject gameObject = new GameObject("LevelGenerator");
-        LevelGenerator generator = gameObject.AddComponent<LevelGenerator>();
-        generator.SetPathToLevelImage(_selectedFilePath);
-        
-        generator.Start();
+        new FileBrowser().OpenFileBrowser(bp, path =>
+        {
+            GlobalVariables.pathToLevel = path;
+            GlobalVariables.createLevelMode = true;
+            SceneManager.LoadScene(Constants.CreateLevelScene);
+        });
     }
 }

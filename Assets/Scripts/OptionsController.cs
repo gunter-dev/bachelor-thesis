@@ -20,10 +20,13 @@ public class OptionsController : MonoBehaviour
         List<string> resolutionOptions = new List<string>();
         for (int i = 0; i < _availableResolutions.Length; i++)
         {
-            string resolution = GetStringFromResolution(_availableResolutions[i]);
+            Resolution res = _availableResolutions[i];
+            if (res.width < Constants.MinimalWidth || res.height < Constants.MinimalHeight) continue;
+
+            string resolution = GetStringFromResolution(res);
             resolutionOptions.Add(resolution);
             
-            if (_availableResolutions[i].width == Screen.width && _availableResolutions[i].height == Screen.height)
+            if (res.width == Screen.width && res.height == Screen.height)
                 currentResolutionIndex = i;
         }
 

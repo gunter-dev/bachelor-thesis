@@ -5,7 +5,8 @@ public class MainMenuController : MonoBehaviour
 {
     public void Play()
     {
-        SceneManager.LoadScene("Scenes/LobbyScene");
+        GlobalVariables.createLevelMode = false;
+        SceneManager.LoadScene(Constants.Game);
     }
 
     public void Quit()

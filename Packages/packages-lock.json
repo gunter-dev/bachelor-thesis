@@ -1,5 +1,12 @@
 {
   "dependencies": {
+    "com.srejonkhan.another-file-browser": {
+      "version": "https://github.com/SrejonKhan/AnotherFileBrowser.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "409955e547afbd4c6973ad11c3c4739b8dc17728"
+    },
     "com.unity.2d.animation": {
       "version": "7.0.5",
       "depth": 1,
@@ -95,12 +102,10 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.collab-proxy": {
-      "version": "1.15.17",
+      "version": "2.0.1",
       "depth": 0,
       "source": "registry",
-      "dependencies": {
-        "com.unity.services.core": "1.0.1"
-      },
+      "dependencies": {},
       "url": "https://packages.unity.com"
     },
     "com.unity.ext.nunit": {
@@ -125,7 +130,7 @@
       }
     },
     "com.unity.ide.rider": {
-      "version": "3.0.14",
+      "version": "3.0.18",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -156,21 +161,19 @@
       "dependencies": {},
       "url": "https://packages.unity.com"
     },
-    "com.unity.nuget.newtonsoft-json": {
-      "version": "3.0.2",
-      "depth": 2,
+    "com.unity.sysroot": {
+      "version": "2.0.5",
+      "depth": 1,
       "source": "registry",
       "dependencies": {},
       "url": "https://packages.unity.com"
     },
-    "com.unity.services.core": {
-      "version": "1.4.0",
+    "com.unity.sysroot.linux-x86_64": {
+      "version": "2.0.4",
       "depth": 1,
       "source": "registry",
       "dependencies": {
-        "com.unity.modules.unitywebrequest": "1.0.0",
-        "com.unity.nuget.newtonsoft-json": "3.0.2",
-        "com.unity.modules.androidjni": "1.0.0"
+        "com.unity.sysroot": "2.0.5"
       },
       "url": "https://packages.unity.com"
     },
@@ -203,6 +206,16 @@
         "com.unity.modules.animation": "1.0.0",
         "com.unity.modules.audio": "1.0.0",
         "com.unity.modules.particlesystem": "1.0.0"
+      },
+      "url": "https://packages.unity.com"
+    },
+    "com.unity.toolchain.win-x86_64-linux-x86_64": {
+      "version": "2.0.4",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.sysroot": "2.0.5",
+        "com.unity.sysroot.linux-x86_64": "2.0.4"
       },
       "url": "https://packages.unity.com"
     },

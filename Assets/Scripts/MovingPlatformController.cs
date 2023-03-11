@@ -5,8 +5,6 @@ public class MovingPlatformController : MonoBehaviour
 {
     public List<PlatformInfo> path;
 
-    public GameObject platformPrefab;
-
     private int _nextIndex;
 
     private void Start()
@@ -24,13 +22,14 @@ public class MovingPlatformController : MonoBehaviour
         for (short i = 1; i < path[_nextIndex].size; i++)
         {
             var position = transform.position;
-            GameObject platformObject = Instantiate(platformPrefab, new Vector3(position.x + i, position.y, 1), Quaternion.identity);
+            GameObject platform = Resources.Load<GameObject>("Grounds/Moving Platform");
+            platform = Instantiate(platform, new Vector3(position.x + i, position.y, 1), Quaternion.identity);
 
             List<PlatformInfo> newPath = new List<PlatformInfo>();
             foreach (var item in path)
                 newPath.Add(new PlatformInfo(item.x + i, item.y, item.colorCode, 0));
 
-            platformObject.GetComponent<MovingPlatformController>().path = newPath;
+            platform.GetComponent<MovingPlatformController>().path = newPath;
         }
     }
 
