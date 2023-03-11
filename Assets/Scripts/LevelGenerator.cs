@@ -110,6 +110,7 @@ public class LevelGenerator : MonoBehaviour
                     break;
             }
         }
+        _levelImage.Close();
     }
 
     private void GenerateMain()
@@ -160,26 +161,26 @@ public class LevelGenerator : MonoBehaviour
                 else if (!bottom) Instantiate(topPrefab, new Vector3(x, y, 1), Quaternion.identity, transform);
                 else */
                 Spawn("Grounds/Grass Ground", new Vector3(x, flippedY, 1));
+                return;
             }
-            else if (colorMapping.color.Equals(pixelColor))
+
+            if (!colorMapping.color.Equals(pixelColor)) continue;
+            
+            GameObject block = Spawn(colorMapping.pathToPrefab, new Vector3(x, flippedY, 1));
+            if (block.CompareTag(Constants.FanTag))
             {
-                GameObject block = Spawn(colorMapping.pathToPrefab, new Vector3(x, flippedY, 1));
-                
-                if (block.CompareTag(Constants.FanTag))
-                {
-                    Spawn("Fan Area Effector", new Vector3(x, flippedY + 1, 1));
-                    Spawn("Fan Area Effector", new Vector3(x, flippedY + 2, 1));
-                }
-                else if (block.CompareTag(Constants.PlayerTag))
-                {
-                    _player = block;
-                }
+                Spawn("Fan Area Effector", new Vector3(x, flippedY + 1, 1));
+                Spawn("Fan Area Effector", new Vector3(x, flippedY + 2, 1));
             }
-            else
+            else if (block.CompareTag(Constants.PlayerTag))
             {
-                DisplayWarning("Main layer - (" + x + ", " + y + "): There is an invalid color on these coordinates. This pixel has been ignored.");
+                _player = block;
             }
+
+            return;
         }
+
+        DisplayWarning("Main layer - (" + x + ", " + y + "): There is an invalid color on these coordinates. This pixel has been ignored.");
     }
 
     private void GenerateElectricity()
