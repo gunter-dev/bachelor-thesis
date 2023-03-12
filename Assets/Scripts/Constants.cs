@@ -28,7 +28,7 @@ public static class Constants
     public const float CreateLevelPanelScreenPercentage = 100 / 1080f;
     
     // Player
-    public const float MoveForce = 10f;
+    public const float MoveForce = 7f;
     public const float JumpForce = 10f;
     public const float SlidingSpeed = 0.3f;
     public const float SlowedDownSpeed = 0.4f;

@@ -1,24 +1,18 @@
 using UnityEngine;
-using AnotherFileBrowser.Windows;
+using SFB;
 using UnityEngine.SceneManagement;
 
 public class CreateLevelController : MonoBehaviour
 {
     public void OpenFileSelector()
     {
-        var bp = new BrowserProperties
-        {
-            title = "Select a TIF image",
-            initialDir = "",
-            filter = "TIF files (*.tif)|*.tif",
-            filterIndex = 0
+        var extensions = new [] {
+            new ExtensionFilter("TIF Files", "tif", "tiff"),
         };
+        var path = StandaloneFileBrowser.OpenFilePanel("Open File", "", extensions, false);
 
-        new FileBrowser().OpenFileBrowser(bp, path =>
-        {
-            GlobalVariables.pathToLevel = path;
-            GlobalVariables.createLevelMode = true;
-            SceneManager.LoadScene(Constants.CreateLevelScene);
-        });
+        GlobalVariables.pathToLevel = path[0];
+        GlobalVariables.createLevelMode = true;
+        SceneManager.LoadScene(Constants.CreateLevelScene);
     }
 }

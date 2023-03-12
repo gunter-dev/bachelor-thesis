@@ -61,6 +61,7 @@ public class Player : MonoBehaviour
     private float MovementSpeed()
     {
         if (_sideGravity) return 0;
+        if (!_grounded) return Input.GetAxis(Constants.Horizontal);
         if (_sliding)
             return Math.Abs(Input.GetAxis(Constants.Horizontal)) < Constants.SlidingSpeed
                 ? Constants.SlidingSpeed * (_movingRight ? 1 : -1)

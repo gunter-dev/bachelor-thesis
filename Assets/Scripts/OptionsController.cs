@@ -21,7 +21,6 @@ public class OptionsController : MonoBehaviour
         for (int i = 0; i < _availableResolutions.Length; i++)
         {
             Resolution res = _availableResolutions[i];
-            if (res.width < Constants.MinimalWidth || res.height < Constants.MinimalHeight) continue;
 
             string resolution = GetStringFromResolution(res);
             resolutionOptions.Add(resolution);

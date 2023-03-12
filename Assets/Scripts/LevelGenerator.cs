@@ -46,7 +46,7 @@ public class LevelGenerator : MonoBehaviour
 
     private void InitializePath()
     {
-        _pathToLevelImage = GlobalVariables.pathToLevel ?? GetFile("Assets\\first-test-level-69.tif");
+        _pathToLevelImage = GlobalVariables.pathToLevel ?? GetFile("Assets/first-test-level-69.tif");
         GlobalVariables.pathToLevel = null;
     }
     
@@ -307,12 +307,12 @@ public class LevelGenerator : MonoBehaviour
 
     private static string GetFile(string fileName)
     {
-        return Directory.GetCurrentDirectory() + "\\" + fileName;
+        return Directory.GetCurrentDirectory() + "/" + fileName;
     }
 
     private void DisplayWarning(string warning)
     {
-        warningText.text = warning;
+        if (GlobalVariables.createLevelMode) warningText.text = warning;
     }
 
     private void DisplayError(string error)
