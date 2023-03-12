@@ -6,14 +6,15 @@ public class Player : MonoBehaviour
     private Rigidbody2D _playerBody;
     private Animator _animator;
     private SpriteRenderer _spriteRenderer;
+    private BoxCollider2D _collider;
 
     private float _xMovement;
 
     public int keysNeeded;
 
     private bool _movingRight = true;
-    private bool _grounded = true;
-    private bool _jumped;
+    private bool _grounded;
+    private bool _jumpAnimated;
     private bool _reversedGravity;
     private bool _gravityLeft;
     private bool _sideGravity;
@@ -26,6 +27,7 @@ public class Player : MonoBehaviour
         _playerBody = GetComponent<Rigidbody2D>();
         _animator = GetComponent<Animator>();
         _spriteRenderer = GetComponent<SpriteRenderer>();
+        _collider = transform.GetComponent<BoxCollider2D>();
     }
 
     // Update is called once per frame
@@ -39,6 +41,8 @@ public class Player : MonoBehaviour
 
     private void PlayerMovement()
     {
+        _grounded = IsGrounded();
+        if ((!_grounded && !_jumpAnimated) || _grounded) _jumpAnimated = false;
         _xMovement = MovementSpeed();
 
         transform.position += Time.deltaTime * Constants.MoveForce * new Vector3(_xMovement, 0f, 0f);
@@ -74,7 +78,6 @@ public class Player : MonoBehaviour
 
     private void PlayerJump()
     {
-        _grounded = false;
         _playerBody.AddForce(
             _sideGravity
                 ? new Vector2(Constants.JumpForce * (_gravityLeft ? -1 : 1), 0f)
@@ -98,7 +101,7 @@ public class Player : MonoBehaviour
     private void Animate()
     {
         if (_grounded) AnimateGrounded();
-        else if (!_jumped) AnimateJump();
+        else if (!_jumpAnimated) AnimateJump();
     }
 
     private void AnimateGrounded()
@@ -108,7 +111,7 @@ public class Player : MonoBehaviour
 
     private void AnimateJump()
     {
-        _jumped = true;
+        _jumpAnimated = true;
         _animator.Play(Constants.Jump);
     }
 
@@ -119,14 +122,6 @@ public class Player : MonoBehaviour
 
         if (contactPoint.y > center.y && !_reversedGravity || contactPoint.y < center.y && _reversedGravity)
         {
-            _grounded = col.gameObject.CompareTag(Constants.GroundTag) || col.gameObject.CompareTag(Constants.IceTag)
-                                                             || col.gameObject.CompareTag(Constants.SlimeTag) ||
-                                                             col.gameObject.CompareTag(Constants.AcceleratorTag)
-                                                             || col.gameObject.CompareTag(Constants.SideTag) ||
-                                                             col.gameObject.CompareTag(Constants.BoxTag)
-                                                             || col.gameObject.CompareTag(Constants.ButtonTag);
-            _jumped = !_grounded;
-
             if (col.gameObject.CompareTag(Constants.GravityBlockTag)) HandleGravityChange();
 
             _sliding = col.gameObject.CompareTag(Constants.IceTag);
@@ -147,5 +142,13 @@ public class Player : MonoBehaviour
     private void KillPlayer()
     {
         Destroy(gameObject);
+    }
+
+    private bool IsGrounded()
+    {
+        LayerMask layer = LayerMask.GetMask(Constants.GroundTag);
+        Bounds bounds = _collider.bounds;
+        Vector2 direction = _reversedGravity ? Vector2.up : Vector2.down;
+        return Physics2D.BoxCast(bounds.center, bounds.size, 0f, direction, 0.1f, layer);
     }
 }

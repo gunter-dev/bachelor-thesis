@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4960957343512036784}
   - component: {fileID: 1101432677618021617}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Grass Ground
   m_TagString: Ground
   m_Icon: {fileID: 0}
@@ -95,7 +95,7 @@ GameObject:
   - component: {fileID: 6724643079718443339}
   - component: {fileID: 7134557126201883867}
   - component: {fileID: 8211057030385274973}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Disappearing Ground
   m_TagString: Ground
   m_Icon: {fileID: 0}

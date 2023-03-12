@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8916371672195914076}
   - component: {fileID: 8916371672195914079}
   - component: {fileID: -4882689205181195864}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Gravity
   m_TagString: Gravity
   m_Icon: {fileID: 0}

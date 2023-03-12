@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 908820877629526855}
   - component: {fileID: 1267364217858853980}
   - component: {fileID: -544288572207578246}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Movable Grass
   m_TagString: Box
   m_Icon: {fileID: 0}

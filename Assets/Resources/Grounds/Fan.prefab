@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8024392834962801142}
   - component: {fileID: 8024392834962801143}
   - component: {fileID: 8024392834962801128}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Fan
   m_TagString: Fan
   m_Icon: {fileID: 0}

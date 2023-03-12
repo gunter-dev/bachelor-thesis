@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8386121447011941238}
   - component: {fileID: 5376907602735916811}
   - component: {fileID: 8961357478778323475}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Accelerator
   m_TagString: Accelerator
   m_Icon: {fileID: 0}
