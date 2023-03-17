@@ -43,6 +43,8 @@ public class Player : MonoBehaviour
     {
         _grounded = IsGrounded();
         if ((!_grounded && !_jumpAnimated) || _grounded) _jumpAnimated = false;
+        if (!_grounded) CheckPlayerIsOnMap();
+
         _xMovement = MovementSpeed();
 
         transform.position += Time.deltaTime * Constants.MoveForce * new Vector3(_xMovement, 0f, 0f);
@@ -60,6 +62,12 @@ public class Player : MonoBehaviour
             _gravityLeft = !_gravityLeft;
             Physics2D.gravity = new Vector2(9.8f * (_gravityLeft ? 1 : -1), 0);
         }
+    }
+
+    private void CheckPlayerIsOnMap()
+    {
+        if (transform.position.y < Constants.MapStartingCoordinate || transform.position.y > GlobalVariables.mapHeight) 
+            KillPlayer();
     }
 
     private float MovementSpeed()

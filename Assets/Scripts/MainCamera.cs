@@ -20,9 +20,6 @@ public class MainCamera : MonoBehaviour
 
     private bool _deathScreenVisible;
 
-    public float mapHeight;
-    public float mapWidth;
-
     private SpriteRenderer _deathScreenTintSpriteRenderer;
 
     private Vector3 _velocity = Vector3.zero;
@@ -113,10 +110,10 @@ public class MainCamera : MonoBehaviour
         _currentCameraSize = _camera.orthographicSize;
         
         _minX = Constants.MapStartingCoordinate + _currentCameraSize * _aspectRatio;
-        _maxX = Constants.MapStartingCoordinate + mapWidth - _currentCameraSize * _aspectRatio;
+        _maxX = Constants.MapStartingCoordinate + GlobalVariables.mapWidth - _currentCameraSize * _aspectRatio;
         
         _minY = Constants.MapStartingCoordinate + _currentCameraSize;
-        _maxY = Constants.MapStartingCoordinate + mapHeight - _currentCameraSize;
+        _maxY = Constants.MapStartingCoordinate + GlobalVariables.mapHeight - _currentCameraSize;
 
         if (GlobalVariables.createLevelMode) _minY -= CreateLevelPanelSize();
     }
@@ -124,8 +121,8 @@ public class MainCamera : MonoBehaviour
     private void RenderBackground()
     {
         Vector3 position = new Vector3(
-            (mapWidth / 2) + Constants.MapStartingCoordinate,
-            (mapHeight / 2) + Constants.MapStartingCoordinate,
+            (GlobalVariables.mapWidth / 2) + Constants.MapStartingCoordinate,
+            (GlobalVariables.mapHeight / 2) + Constants.MapStartingCoordinate,
             0
             );
 
@@ -135,7 +132,7 @@ public class MainCamera : MonoBehaviour
         SpriteRenderer backgroundSpriteRenderer = background.GetComponent<SpriteRenderer>();
         Vector3 backgroundSize = backgroundSpriteRenderer.bounds.size;
         
-        background.transform.localScale = new Vector2(mapWidth / backgroundSize.x, mapHeight / backgroundSize.y);
+        background.transform.localScale = new Vector2(GlobalVariables.mapWidth / backgroundSize.x, GlobalVariables.mapHeight / backgroundSize.y);
     }
 
     private float CreateLevelPanelSize()

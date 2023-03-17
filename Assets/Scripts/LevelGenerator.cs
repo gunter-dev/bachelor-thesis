@@ -77,6 +77,9 @@ public class LevelGenerator : MonoBehaviour
             _mapWidth = _levelImage.GetField(TiffTag.IMAGEWIDTH)[0].ToInt();
             _mapHeight = _levelImage.GetField(TiffTag.IMAGELENGTH)[0].ToInt();
 
+            GlobalVariables.mapWidth = _mapWidth;
+            GlobalVariables.mapHeight = _mapHeight;
+
             int imageSize = _mapWidth * _mapHeight;
             _raster = new int[imageSize];
         } else DisplayError("Error opening file: '" + _pathToLevelImage + "'. Please try a different file.");
@@ -281,8 +284,6 @@ public class LevelGenerator : MonoBehaviour
         mainCamera = Instantiate(mainCamera, cameraPosition, Quaternion.identity);
         
         mainCamera.orthographicSize = _mapHeight / 2f;
-        mainCamera.GetComponent<MainCamera>().mapHeight = _mapHeight;
-        mainCamera.GetComponent<MainCamera>().mapWidth = _mapWidth;
     }
 
     private Color GetPixelColor(int x, int y)
