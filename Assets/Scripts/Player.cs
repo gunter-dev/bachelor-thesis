@@ -16,8 +16,6 @@ public class Player : MonoBehaviour
     private bool _grounded;
     private bool _jumpAnimated;
     private bool _reversedGravity;
-    private bool _gravityLeft;
-    private bool _sideGravity;
     private bool _sliding;
     private bool _slowedDown;
     private bool _onAccelerator;
@@ -49,19 +47,7 @@ public class Player : MonoBehaviour
 
         transform.position += Time.deltaTime * Constants.MoveForce * new Vector3(_xMovement, 0f, 0f);
 
-        if (_sideGravity)
-        {
-            var yMovement = Input.GetAxisRaw(Constants.Vertical);
-            transform.position += Time.deltaTime * Constants.MoveForce * new Vector3(0f, yMovement, 0f);
-        }
-
         if (Input.GetButtonDown(Constants.Jump) && _grounded) PlayerJump();
-        if (Input.GetKeyDown(KeyCode.O))
-        {
-            _sideGravity = true;
-            _gravityLeft = !_gravityLeft;
-            Physics2D.gravity = new Vector2(9.8f * (_gravityLeft ? 1 : -1), 0);
-        }
     }
 
     private void CheckPlayerIsOnMap()
@@ -72,7 +58,6 @@ public class Player : MonoBehaviour
 
     private float MovementSpeed()
     {
-        if (_sideGravity) return 0;
         if (!_grounded) return Input.GetAxis(Constants.Horizontal);
         if (_sliding)
             return Math.Abs(Input.GetAxis(Constants.Horizontal)) < Constants.SlidingSpeed
@@ -87,10 +72,9 @@ public class Player : MonoBehaviour
     private void PlayerJump()
     {
         _playerBody.AddForce(
-            _sideGravity
-                ? new Vector2(Constants.JumpForce * (_gravityLeft ? -1 : 1), 0f)
-                : new Vector2(0f, Constants.JumpForce * (_reversedGravity ? -1 : 1) * (_slowedDown ? 0.5f : 1)), 
-            ForceMode2D.Impulse);
+            new Vector2(0f, Constants.JumpForce * (_reversedGravity ? -1 : 1) * (_slowedDown ? 0.5f : 1)), 
+            ForceMode2D.Impulse
+            );
     }
     
     private void CalculateFlip()
