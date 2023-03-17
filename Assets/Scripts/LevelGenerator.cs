@@ -275,7 +275,7 @@ public class LevelGenerator : MonoBehaviour
     private void SpawnCamera()
     {
         // z is -10 because the camera needs to be position "in front" of everything else
-        Vector3 cameraPosition = new Vector3(_mapWidth / 2f - 0.5f, _mapHeight / 2f - 0.5f, -10);
+        Vector3 cameraPosition = new Vector3(_mapWidth / 2f + Constants.MapStartingCoordinate, _mapHeight / 2f  + Constants.MapStartingCoordinate, -10);
 
         Camera mainCamera = Resources.Load<Camera>("Main Camera");
         mainCamera = Instantiate(mainCamera, cameraPosition, Quaternion.identity);

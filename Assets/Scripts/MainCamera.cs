@@ -3,12 +3,18 @@ using Color = UnityEngine.Color;
 
 public class MainCamera : MonoBehaviour
 {
-    private Transform _playerPosition;
+    private Transform _playerTransform;
+    private SpriteRenderer _playerSpriteRenderer;
     private Vector3 _cameraPosition;
 
     private float _defaultCameraSize;
     private float _currentCameraSize;
     private float _aspectRatio;
+
+    private float _minX;
+    private float _maxX;
+    private float _minY;
+    private float _maxY;
 
     private Camera _camera;
 
@@ -19,32 +25,34 @@ public class MainCamera : MonoBehaviour
 
     private SpriteRenderer _deathScreenTintSpriteRenderer;
 
+    private Vector3 _velocity = Vector3.zero;
+
     void Start()
     {
-        _playerPosition = GameObject.FindWithTag(Constants.PlayerTag).transform;
+        GameObject player = GameObject.FindWithTag(Constants.PlayerTag);
+        _playerTransform = player.transform;
+        _playerSpriteRenderer = player.GetComponent<SpriteRenderer>();
+        
         _camera = GetComponent<Camera>();
         _aspectRatio = (float)Screen.width / Screen.height;
         
         // The orthographicSize is half the size of the vertical viewing volume. -> https://docs.unity3d.com/ScriptReference/Camera-orthographicSize.html
         // At the Start, the orthographic size of camera is the same, as the half of map height
-        _defaultCameraSize = _camera.orthographicSize;
+        _defaultCameraSize = _currentCameraSize = _camera.orthographicSize;
         
         RenderBackground();
     }
 
     void LateUpdate()
     {
-        if (!_playerPosition)
+        if (!_playerTransform)
         {
             if (!_deathScreenVisible) InstantiateRedTint();
             UpdateRedTintOpacity(_deathScreenTintSpriteRenderer.color.a + Time.deltaTime / Constants.AppearingTime);
             return;
         }
         
-        ChangeSizeOnScroll();
-        FocusPlayer();
-
-        _currentCameraSize = _camera.orthographicSize;
+        CalculateCameraSizeAndPosition();
     }
 
     private void InstantiateRedTint()
@@ -74,41 +82,43 @@ public class MainCamera : MonoBehaviour
         }
     }
 
-    private void ChangeSizeOnScroll()
+    private void CalculateCameraSizeAndPosition()
     {
-        if (Input.mouseScrollDelta.y > 0 && _currentCameraSize >= 5) 
-            _camera.orthographicSize -= Constants.CameraSizeChange;
-        else if (Input.mouseScrollDelta.y < 0 && _currentCameraSize < _defaultCameraSize) 
-            _camera.orthographicSize += Constants.CameraSizeChange;
+        if (Input.mouseScrollDelta.y != 0)
+        {
+            float newSize = _camera.orthographicSize - (Input.mouseScrollDelta.y * Constants.CameraSizeChange);
+            _camera.orthographicSize = Mathf.Clamp(newSize, 5f, _defaultCameraSize);
+            FocusPlayer(Input.mouseScrollDelta.y < 0);
+        } else FocusPlayer(false);
     }
 
-    private void FocusPlayer()
+    private void FocusPlayer(bool afterZoom)
     {
-        _cameraPosition = transform.position;
-
-        var minX = Constants.MapStartingCoordinate + _currentCameraSize * _aspectRatio;
-        var maxX = Constants.MapStartingCoordinate + mapWidth - _currentCameraSize * _aspectRatio;
-
-        if (_playerPosition.position.x < minX)
-            _cameraPosition.x = minX;
-        else if (_playerPosition.position.x > maxX)
-            _cameraPosition.x = maxX;
-        else
-            _cameraPosition.x = _playerPosition.position.x;
-
-        var minY = Constants.MapStartingCoordinate + _currentCameraSize;
-        var maxY = Constants.MapStartingCoordinate + mapHeight - _currentCameraSize;
-
-        if (GlobalVariables.createLevelMode) minY -= CreateLevelPanelSize();
-
-        if (_playerPosition.position.y < minY)
-            _cameraPosition.y = minY;
-        else if (_playerPosition.position.y > maxY)
-            _cameraPosition.y = maxY;
-        else
-            _cameraPosition.y = _playerPosition.position.y;
+        CalculateCameraLimits();
         
-        transform.SetPositionAndRotation(_cameraPosition, new Quaternion());
+        var current = _cameraPosition = transform.position;
+        Vector3 cameraOffsetFromPlayer = new Vector3(_playerSpriteRenderer.flipX ? -5f : 5f, 0, 0);
+        Vector3 playerPosition = _playerTransform.position + cameraOffsetFromPlayer;
+
+        _cameraPosition.x = Mathf.Clamp(playerPosition.x, _minX, _maxX);
+        _cameraPosition.y = Mathf.Clamp(playerPosition.y, _minY, _maxY);
+
+        transform.position = afterZoom 
+            ? _cameraPosition
+            : Vector3.SmoothDamp(current, _cameraPosition, ref _velocity, 0.5f);
+    }
+
+    private void CalculateCameraLimits()
+    {
+        _currentCameraSize = _camera.orthographicSize;
+        
+        _minX = Constants.MapStartingCoordinate + _currentCameraSize * _aspectRatio;
+        _maxX = Constants.MapStartingCoordinate + mapWidth - _currentCameraSize * _aspectRatio;
+        
+        _minY = Constants.MapStartingCoordinate + _currentCameraSize;
+        _maxY = Constants.MapStartingCoordinate + mapHeight - _currentCameraSize;
+
+        if (GlobalVariables.createLevelMode) _minY -= CreateLevelPanelSize();
     }
 
     private void RenderBackground()
