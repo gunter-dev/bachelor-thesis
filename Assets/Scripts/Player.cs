@@ -44,8 +44,11 @@ public class Player : MonoBehaviour
         if (!_grounded) CheckPlayerIsOnMap();
 
         _xMovement = MovementSpeed();
-
-        transform.position += Time.deltaTime * Constants.MoveForce * new Vector3(_xMovement, 0f, 0f);
+        
+        if (_sliding && _playerBody.velocity.x < 10f)
+            _playerBody.AddForce(new Vector2(_xMovement * 2f, 0f));
+        else
+            transform.position += Time.deltaTime * Constants.MoveForce * new Vector3(_xMovement, 0f, 0f);
 
         if (Input.GetButtonDown(Constants.Jump) && _grounded) PlayerJump();
     }
@@ -59,10 +62,6 @@ public class Player : MonoBehaviour
     private float MovementSpeed()
     {
         if (!_grounded) return Input.GetAxis(Constants.Horizontal);
-        if (_sliding)
-            return Math.Abs(Input.GetAxis(Constants.Horizontal)) < Constants.SlidingSpeed
-                ? Constants.SlidingSpeed * (_movingRight ? 1 : -1)
-                : Input.GetAxis(Constants.Horizontal);
 
         if (_onAccelerator) return Input.GetAxisRaw(Constants.Horizontal) + Constants.AcceleratorPlusSpeed;
 

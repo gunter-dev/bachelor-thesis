@@ -113,6 +113,8 @@ public class LevelGenerator : MonoBehaviour
                     break;
             }
         }
+
+        GenerateGlobalLight();
         _levelImage.Close();
     }
 
@@ -273,6 +275,11 @@ public class LevelGenerator : MonoBehaviour
         }
 
         _player.GetComponent<Player>().keysNeeded = _keysAmount;
+    }
+
+    void GenerateGlobalLight()
+    {
+        Instantiate(GetPrefab("Global Light"), Vector3.zero, Quaternion.identity);
     }
 
     private void SpawnCamera()
