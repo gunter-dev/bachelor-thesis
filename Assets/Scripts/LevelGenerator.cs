@@ -7,6 +7,7 @@ using Color = System.Drawing.Color;
 
 using BitMiracle.LibTiff.Classic;
 using TMPro;
+using UnityEngine.Rendering.Universal;
 using UnityEngine.SceneManagement;
 using GameObject = UnityEngine.GameObject;
 
@@ -107,6 +108,9 @@ public class LevelGenerator : MonoBehaviour
                     break;
                 case Constants.KeysLayer:
                     GenerateKeys();
+                    break;
+                case Constants.LightLayer:
+                    GenerateLights();
                     break;
                 default: 
                     DisplayWarning("Unknown layer name: '" + pageName + "'. This layer was ignored.");
@@ -277,7 +281,27 @@ public class LevelGenerator : MonoBehaviour
         _player.GetComponent<Player>().keysNeeded = _keysAmount;
     }
 
-    void GenerateGlobalLight()
+    private void GenerateLights()
+    {
+        for (int x = 0; x < _mapWidth; x++)
+        {
+            for (int y = 0; y < _mapHeight; y++)
+            {
+                Color pixelColor = GetPixelColor(x, y);
+
+                if (pixelColor.A == 0) continue;
+
+                int flippedY = _mapHeight - 1 - y;
+
+                Light2D spotLight = Resources.Load<Light2D>("Spot Light");
+                spotLight.color = ParseToUnityColor(pixelColor);
+
+                Instantiate(spotLight, new Vector2(x, flippedY), Quaternion.identity);
+            }
+        }
+    }
+
+    private void GenerateGlobalLight()
     {
         Instantiate(GetPrefab("Global Light"), Vector3.zero, Quaternion.identity);
     }
@@ -301,6 +325,11 @@ public class LevelGenerator : MonoBehaviour
         int green = Tiff.GetG(_raster[offset]);
         int blue = Tiff.GetB(_raster[offset]);
         return Color.FromArgb(alpha, red, green, blue);
+    }
+
+    private UnityEngine.Color ParseToUnityColor(Color srcColor)
+    {
+        return new UnityEngine.Color(srcColor.R / 255f, srcColor.G / 255f, srcColor.B / 255f, srcColor.A / 255f);
     }
 
     private static GameObject GetPrefab(string pathName)

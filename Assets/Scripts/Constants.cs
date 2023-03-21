@@ -19,6 +19,7 @@ public static class Constants
     public const string ElectricityLayer = "electricity";
     public const string MovingPlatformLayer = "movingPlatforms";
     public const string KeysLayer = "keys";
+    public const string LightLayer = "light";
     
     // Camera
     public const float MapStartingCoordinate = -0.5f;
