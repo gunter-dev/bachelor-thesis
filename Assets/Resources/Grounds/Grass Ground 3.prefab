@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 1711469767362603413}
   - component: {fileID: 1711469767362603419}
   m_Layer: 8
-  m_Name: Grass Ground
+  m_Name: Grass Ground 3
   m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -74,7 +74,7 @@ SpriteRenderer:
   m_SortingLayerID: 34018153
   m_SortingLayer: 2
   m_SortingOrder: 0
-  m_Sprite: {fileID: -7190719572971877601, guid: 157cbc340d2b7e64ab85168e80e95550, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 8c4917520b5c6b446b4f9954edfb41a2, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0

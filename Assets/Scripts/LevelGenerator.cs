@@ -10,6 +10,7 @@ using TMPro;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.SceneManagement;
 using GameObject = UnityEngine.GameObject;
+using Random = UnityEngine.Random;
 
 public class LevelGenerator : MonoBehaviour
 {
@@ -22,6 +23,8 @@ public class LevelGenerator : MonoBehaviour
 
     private GameObject _player;
     private int _keysAmount;
+
+    private bool _lightLayerPresent;
 
     private ColorPrefab[] _colorMappings;
 
@@ -63,7 +66,7 @@ public class LevelGenerator : MonoBehaviour
             new (Color.FromArgb(255, 0, 255), "Spike"),
             new (Color.FromArgb(0, 0, 255), "Grounds/Gravity"),
             new (Color.FromArgb(255, 255, 0), "Grounds/Fan"),
-            new (Color.FromArgb(100, 0, 0), "Grounds/Movable Grass"),
+            new (Color.FromArgb(100, 0, 0), "Grounds/Box"),
             new (Color.FromArgb(100, 100, 0), "Grounds/Disappearing Ground"),
             new (Color.FromArgb(100, 100, 100), "Exit")
         };
@@ -110,6 +113,7 @@ public class LevelGenerator : MonoBehaviour
                     GenerateKeys();
                     break;
                 case Constants.LightLayer:
+                    _lightLayerPresent = true;
                     GenerateLights();
                     break;
                 default: 
@@ -142,44 +146,28 @@ public class LevelGenerator : MonoBehaviour
         // The pixel is transparent, we want to ignore it.
         if (pixelColor.A == 0) return;
 
+        if (pixelColor.Equals(Color.FromArgb(0, 0, 0)))
+        {
+            int randomValue = Random.Range(1, 4);
+            Spawn("Grounds/Grass Ground " + randomValue, new Vector3(x, flippedY, 1));
+            return;
+        }
+        
         foreach (ColorPrefab colorMapping in _colorMappings)
         {
-            if (pixelColor.Equals(Color.FromArgb(0, 0, 0)))
-            {
-                /*bool leftBottom, leftTop, rightBottom, rightTop = false;
-                if (x != 0)
-                {
-                    if (y != _mapHeight) leftTop = GetPixelColor(x - 1, y + 1).A != 0;
-                    else if (y != 0)      leftBottom = GetPixelColor(x - 1, y - 1).A != 0;
-                }
-
-                if (x != _mapHeight)
-                {
-                    if (y != _mapHeight) rightTop = GetPixelColor(x + 1, y + 1).A != 0;
-                    else if (y != 0)      rightBottom = GetPixelColor(x + 1, y - 1).A != 0;
-                }
-                
-                bool left =   x != 0           && GetPixelColor(x - 1, y).A != 0;
-                bool right =  y != _mapWidth  && GetPixelColor(x + 1, y).A != 0;
-                bool bottom = y != 0           && GetPixelColor(x, y - 1).A != 0;
-                bool top =    x != _mapHeight && GetPixelColor(x, y + 1).Equals(Color.Black);
-
-                if (!top)         Instantiate(groundPrefab, new Vector3(x, y, 1), Quaternion.identity, transform);
-                else if (!right)  Instantiate(leftSidePrefab, new Vector3(x, y, 1), Quaternion.identity, transform);
-                else if (!left)   Instantiate(rightSidePrefab, new Vector3(x, y, 1), Quaternion.identity, transform);
-                else if (!bottom) Instantiate(topPrefab, new Vector3(x, y, 1), Quaternion.identity, transform);
-                else */
-                Spawn("Grounds/Grass Ground", new Vector3(x, flippedY, 1));
-                return;
-            }
-
             if (!colorMapping.color.Equals(pixelColor)) continue;
-            
+
             GameObject block = Spawn(colorMapping.pathToPrefab, new Vector3(x, flippedY, 1));
             if (block.CompareTag(Constants.FanTag))
             {
                 Spawn("Fan Area Effector", new Vector3(x, flippedY + 1, 1));
                 Spawn("Fan Area Effector", new Vector3(x, flippedY + 2, 1));
+            }
+            else if (block.CompareTag(Constants.GravityBlockTag))
+            {
+                if (flippedY == 0) return;
+                if (flippedY == _mapHeight - 1 || GetPixelColor(x, y - 1).A != 0)
+                    FlipBlockOnY(block);
             }
             else if (block.CompareTag(Constants.PlayerTag))
             {
@@ -190,6 +178,15 @@ public class LevelGenerator : MonoBehaviour
         }
 
         DisplayWarning("Main layer - (" + x + ", " + y + "): There is an invalid color on these coordinates. This pixel has been ignored.");
+    }
+
+    private void FlipBlockOnY(GameObject block)
+    {
+        block.GetComponent<SpriteRenderer>().flipY = true;
+        BoxCollider2D col = block.GetComponent<BoxCollider2D>();
+        Vector2 offset = col.offset;
+        offset.y *= -1;
+        col.offset = offset;
     }
 
     private void GenerateElectricity()
@@ -303,7 +300,18 @@ public class LevelGenerator : MonoBehaviour
 
     private void GenerateGlobalLight()
     {
-        Instantiate(GetPrefab("Global Light"), Vector3.zero, Quaternion.identity);
+        Light2D globalLight = Instantiate(Resources.Load<Light2D>("Global Light"), Vector3.zero, Quaternion.identity);
+        if (!_lightLayerPresent)
+        {
+            globalLight.intensity = 0.6f;
+
+            Light2D spotLight = Resources.Load<Light2D>("Spot Light");
+            spotLight.color = UnityEngine.Color.white;
+            spotLight.pointLightInnerRadius = 5;
+            spotLight.pointLightOuterRadius = 10;
+
+            Instantiate(spotLight, new Vector2(10, 16), Quaternion.identity);
+        }
     }
 
     private void SpawnCamera()

@@ -2,9 +2,8 @@ using UnityEngine;
 
 public class DisappearingGroundController : MonoBehaviour
 {
-    private SpriteRenderer _childSpriteRenderer;
+    private SpriteRenderer _spriteRenderer;
     private BoxCollider2D _boxCollider;
-    private Transform _child;
     
     private float _time;
     private const float DisappearingTime = 2;
@@ -14,8 +13,7 @@ public class DisappearingGroundController : MonoBehaviour
 
     private void Start()
     {
-        _child = gameObject.transform.GetChild(0);
-        _childSpriteRenderer = _child.GetComponent<SpriteRenderer>();
+        _spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
         _boxCollider = GetComponent<BoxCollider2D>();
     }
 
@@ -32,7 +30,7 @@ public class DisappearingGroundController : MonoBehaviour
                 _disappeared = true;
                 _startedDisappearing = false;
                 _time = 0;
-                _child.gameObject.SetActive(false);
+                gameObject.SetActive(false);
                 _boxCollider.size = new Vector2(0, 0);
             }
         } 
@@ -44,7 +42,7 @@ public class DisappearingGroundController : MonoBehaviour
             {
                 _disappeared = false;
                 _time = 0;
-                _child.gameObject.SetActive(true);
+                gameObject.SetActive(true);
                 _boxCollider.size = new Vector2(1, 1);
                 UpdateAlphaChannel(-1);
             }
@@ -59,8 +57,8 @@ public class DisappearingGroundController : MonoBehaviour
 
     private void UpdateAlphaChannel(float toDeduct)
     {
-        Color spriteColor = _childSpriteRenderer.color;
+        Color spriteColor = _spriteRenderer.color;
         spriteColor.a -= toDeduct;
-        _childSpriteRenderer.color = spriteColor;
+        _spriteRenderer.color = spriteColor;
     }
 }
