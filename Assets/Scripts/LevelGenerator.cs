@@ -123,6 +123,7 @@ public class LevelGenerator : MonoBehaviour
         }
 
         GenerateGlobalLight();
+        Physics2D.gravity = new Vector2(0, -9.8f);
         _levelImage.Close();
     }
 
@@ -306,11 +307,11 @@ public class LevelGenerator : MonoBehaviour
             globalLight.intensity = 0.6f;
 
             Light2D spotLight = Resources.Load<Light2D>("Spot Light");
+            spotLight = Instantiate(spotLight, new Vector2(10, 16), Quaternion.identity);
+ 
             spotLight.color = UnityEngine.Color.white;
             spotLight.pointLightInnerRadius = 5;
             spotLight.pointLightOuterRadius = 10;
-
-            Instantiate(spotLight, new Vector2(10, 16), Quaternion.identity);
         }
     }
 
