@@ -6,6 +6,7 @@ using System.Linq;
 using Color = System.Drawing.Color;
 
 using BitMiracle.LibTiff.Classic;
+using BlockScripts;
 using TMPro;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.SceneManagement;

@@ -1,16 +1,19 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class MainMenuController : MonoBehaviour
+namespace MenuScripts
 {
-    public void Play()
+    public class MainMenuController : MonoBehaviour
     {
-        GlobalVariables.createLevelMode = false;
-        SceneManager.LoadScene(Constants.Game);
-    }
+        public void Play()
+        {
+            GlobalVariables.createLevelMode = false;
+            SceneManager.LoadScene(Constants.Game);
+        }
 
-    public void Quit()
-    {
-        Application.Quit();
+        public void Quit()
+        {
+            Application.Quit();
+        }
     }
 }

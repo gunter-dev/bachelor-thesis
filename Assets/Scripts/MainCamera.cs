@@ -18,10 +18,6 @@ public class MainCamera : MonoBehaviour
 
     private Camera _camera;
 
-    private bool _deathScreenVisible;
-
-    private SpriteRenderer _deathScreenTintSpriteRenderer;
-
     private Vector3 _velocity = Vector3.zero;
 
     void Start()
@@ -42,41 +38,8 @@ public class MainCamera : MonoBehaviour
 
     void LateUpdate()
     {
-        if (!_playerTransform)
-        {
-            if (!_deathScreenVisible) InstantiateRedTint();
-            UpdateRedTintOpacity(_deathScreenTintSpriteRenderer.color.a + Time.deltaTime / Constants.AppearingTime);
-            return;
-        }
-        
+        if (!_playerTransform) return;
         CalculateCameraSizeAndPosition();
-    }
-
-    private void InstantiateRedTint()
-    {
-        Vector3 position = new Vector3(_cameraPosition.x, _cameraPosition.y, 0);
-
-        GameObject deathScreenTint = Resources.Load<GameObject>("DeathScreenTint");
-        deathScreenTint = Instantiate(deathScreenTint, position, Quaternion.identity);
-
-        _deathScreenTintSpriteRenderer = deathScreenTint.GetComponent<SpriteRenderer>();
-        Vector3 tintSize = _deathScreenTintSpriteRenderer.bounds.size;
-        
-        deathScreenTint.transform.localScale = new Vector2(2 * _currentCameraSize * _aspectRatio / tintSize.x, 2 * _currentCameraSize / tintSize.y);
-
-        UpdateRedTintOpacity(0);
-
-        _deathScreenVisible = true;
-    }
-
-    private void UpdateRedTintOpacity(float opacity)
-    {
-        if (opacity <= Constants.MaxRedTintOpacity)
-        {
-            Color deathScreenColor = _deathScreenTintSpriteRenderer.color;
-            deathScreenColor.a = opacity;
-            _deathScreenTintSpriteRenderer.color = deathScreenColor;
-        }
     }
 
     private void CalculateCameraSizeAndPosition()

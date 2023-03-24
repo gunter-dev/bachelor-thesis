@@ -1,13 +1,16 @@
 using UnityEngine;
 
-public class KeyController : MonoBehaviour
+namespace BlockScripts
 {
-    private void OnCollisionEnter2D(Collision2D col)
+    public class KeyController : MonoBehaviour
     {
-        if (col.gameObject.CompareTag(Constants.PlayerTag))
+        private void OnCollisionEnter2D(Collision2D col)
         {
-            Destroy(gameObject);
-            col.gameObject.GetComponent<Player>().keysNeeded--;
+            if (col.gameObject.CompareTag(Constants.PlayerTag))
+            {
+                Destroy(gameObject);
+                col.gameObject.GetComponent<Player>().keysNeeded--;
+            }
         }
     }
 }

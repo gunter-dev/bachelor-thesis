@@ -1,3 +1,4 @@
+using MenuScripts;
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -30,7 +31,7 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (PauseMenu.isPaused) return;
+        if (LobbyMenus.isPaused) return;
         PlayerMovement();
         CalculateFlip();
         Animate();
@@ -132,6 +133,7 @@ public class Player : MonoBehaviour
     private void KillPlayer()
     {
         Destroy(gameObject);
+        LobbyMenus.isPlayerDead = true;
     }
 
     private bool IsGrounded()

@@ -1,61 +1,64 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ButtonController : MonoBehaviour
+namespace BlockScripts
 {
-    public List<ElectricityInfo> affectedBlocks;
-    public List<GameObject> affectedGameObjects;
-
-    private SpriteRenderer _spriteRenderer;
-
-    public Sprite unpressedTexture;
-    public Sprite pressedTexture;
-
-    // Start is called before the first frame update
-    private void Start()
+    public class ButtonController : MonoBehaviour
     {
-        _spriteRenderer = GetComponent<SpriteRenderer>();
-        InstantiateAffectedBlocks();
-    }
+        public List<ElectricityInfo> affectedBlocks;
+        public List<GameObject> affectedGameObjects;
 
-    private void InstantiateAffectedBlocks()
-    {
-        foreach (var block in affectedBlocks)
-        { 
-            if (block.colorCode != 0)
-            {
-                Vector3 position = new Vector3(block.x, block.y, 1);
-                GameObject affected = Resources.Load<GameObject>("Grounds/Grass Ground 1");
-                affected = Instantiate(affected, position, Quaternion.identity);
+        private SpriteRenderer _spriteRenderer;
+
+        public Sprite unpressedTexture;
+        public Sprite pressedTexture;
+
+        // Start is called before the first frame update
+        private void Start()
+        {
+            _spriteRenderer = GetComponent<SpriteRenderer>();
+            InstantiateAffectedBlocks();
+        }
+
+        private void InstantiateAffectedBlocks()
+        {
+            foreach (var block in affectedBlocks)
+            { 
+                if (block.colorCode != 0)
+                {
+                    Vector3 position = new Vector3(block.x, block.y, 1);
+                    GameObject affected = Resources.Load<GameObject>("Grounds/Grass Ground 1");
+                    affected = Instantiate(affected, position, Quaternion.identity);
                 
-                affectedGameObjects.Add(affected);
+                    affectedGameObjects.Add(affected);
+                }
             }
         }
-    }
 
-    private void HandlePressed()
-    {
-        _spriteRenderer.sprite = pressedTexture;
+        private void HandlePressed()
+        {
+            _spriteRenderer.sprite = pressedTexture;
         
-        foreach (var affectedObject in affectedGameObjects)
-            affectedObject.SetActive(false);
-    }
+            foreach (var affectedObject in affectedGameObjects)
+                affectedObject.SetActive(false);
+        }
 
-    private void HandleRelease()
-    {
-        _spriteRenderer.sprite = unpressedTexture;
+        private void HandleRelease()
+        {
+            _spriteRenderer.sprite = unpressedTexture;
         
-        foreach (var affectedObject in affectedGameObjects)
-            affectedObject.SetActive(true);
-    }
+            foreach (var affectedObject in affectedGameObjects)
+                affectedObject.SetActive(true);
+        }
     
-    private void OnCollisionEnter2D()
-    {
-        HandlePressed();
-    }
+        private void OnCollisionEnter2D()
+        {
+            HandlePressed();
+        }
     
-    private void OnCollisionExit2D()
-    {
-        HandleRelease();
+        private void OnCollisionExit2D()
+        {
+            HandleRelease();
+        }
     }
 }

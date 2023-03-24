@@ -1,48 +1,51 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class OptionsController : MonoBehaviour
+namespace MenuScripts
 {
-    private Resolution[] _availableResolutions;
+    public class OptionsController : MonoBehaviour
+    {
+        private Resolution[] _availableResolutions;
 
-    public TMPro.TMP_Dropdown resolutionDropdown;
+        public TMPro.TMP_Dropdown resolutionDropdown;
     
-    void Start()
-    {
-        FillResolutionDropdown();
-    }
-
-    private void FillResolutionDropdown()
-    {
-        _availableResolutions = Screen.resolutions;
-        int currentResolutionIndex = 0;
-
-        List<string> resolutionOptions = new List<string>();
-        for (int i = 0; i < _availableResolutions.Length; i++)
+        void Start()
         {
-            Resolution res = _availableResolutions[i];
-
-            string resolution = GetStringFromResolution(res);
-            resolutionOptions.Add(resolution);
-            
-            if (res.width == Screen.width && res.height == Screen.height)
-                currentResolutionIndex = i;
+            FillResolutionDropdown();
         }
 
-        resolutionDropdown.ClearOptions();
-        resolutionDropdown.AddOptions(resolutionOptions);
-        resolutionDropdown.value = currentResolutionIndex;
-        resolutionDropdown.RefreshShownValue();
-    }
+        private void FillResolutionDropdown()
+        {
+            _availableResolutions = Screen.resolutions;
+            int currentResolutionIndex = 0;
 
-    private string GetStringFromResolution(Resolution resolution)
-    {
-        return resolution.width + "x" + resolution.height + "@" + resolution.refreshRate + "hz";
-    }
+            List<string> resolutionOptions = new List<string>();
+            for (int i = 0; i < _availableResolutions.Length; i++)
+            {
+                Resolution res = _availableResolutions[i];
 
-    public void SetResolution(int resolutionIndex)
-    {
-        Resolution resolution = _availableResolutions[resolutionIndex];
-        Screen.SetResolution(resolution.width, resolution.height, Screen.fullScreen);
+                string resolution = GetStringFromResolution(res);
+                resolutionOptions.Add(resolution);
+            
+                if (res.width == Screen.width && res.height == Screen.height)
+                    currentResolutionIndex = i;
+            }
+
+            resolutionDropdown.ClearOptions();
+            resolutionDropdown.AddOptions(resolutionOptions);
+            resolutionDropdown.value = currentResolutionIndex;
+            resolutionDropdown.RefreshShownValue();
+        }
+
+        private string GetStringFromResolution(Resolution resolution)
+        {
+            return resolution.width + "x" + resolution.height + "@" + resolution.refreshRate + "hz";
+        }
+
+        public void SetResolution(int resolutionIndex)
+        {
+            Resolution resolution = _availableResolutions[resolutionIndex];
+            Screen.SetResolution(resolution.width, resolution.height, Screen.fullScreen);
+        }
     }
 }

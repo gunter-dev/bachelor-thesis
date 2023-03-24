@@ -2,22 +2,25 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class ErrorScreen : MonoBehaviour
+namespace MenuScripts
 {
-    public TMP_Text errorText;
+    public class ErrorScreen : MonoBehaviour
+    {
+        public TMP_Text errorText;
     
-    private void Start()
-    {
-        errorText.text = GlobalVariables.errorMessage;
-    }
+        private void Start()
+        {
+            errorText.text = GlobalVariables.errorMessage;
+        }
 
-    public void Back()
-    {
-        SceneManager.LoadScene(Constants.MainMenu);
-    }
+        public void Back()
+        {
+            SceneManager.LoadScene(Constants.MainMenu);
+        }
 
-    public void Reload()
-    {
-        SceneManager.LoadScene(Constants.CreateLevelScene);
+        public void Reload()
+        {
+            SceneManager.LoadScene(Constants.CreateLevelScene);
+        }
     }
 }

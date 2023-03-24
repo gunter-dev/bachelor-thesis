@@ -1,18 +1,21 @@
-using UnityEngine;
 using SFB;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class CreateLevelController : MonoBehaviour
+namespace MenuScripts
 {
-    public void OpenFileSelector()
+    public class CreateLevelController : MonoBehaviour
     {
-        var extensions = new [] {
-            new ExtensionFilter("TIF Files", "tif", "tiff"),
-        };
-        var path = StandaloneFileBrowser.OpenFilePanel("Open File", "", extensions, false);
+        public void OpenFileSelector()
+        {
+            var extensions = new [] {
+                new ExtensionFilter("TIF Files", "tif", "tiff"),
+            };
+            var path = StandaloneFileBrowser.OpenFilePanel("Open File", "", extensions, false);
 
-        GlobalVariables.pathToLevel = path[0];
-        GlobalVariables.createLevelMode = true;
-        SceneManager.LoadScene(Constants.CreateLevelScene);
+            GlobalVariables.pathToLevel = path[0];
+            GlobalVariables.createLevelMode = true;
+            SceneManager.LoadScene(Constants.CreateLevelScene);
+        }
     }
 }

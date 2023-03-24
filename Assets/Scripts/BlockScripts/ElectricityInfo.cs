@@ -1,13 +1,16 @@
-public class ElectricityInfo
+namespace BlockScripts
 {
-    public readonly float x, y;
-
-    public readonly short colorCode;
-
-    public ElectricityInfo(float x, float y, short colorCode)
+    public class ElectricityInfo
     {
-        this.x = x;
-        this.y = y;
-        this.colorCode = colorCode;
+        public readonly float x, y;
+
+        public readonly short colorCode;
+
+        public ElectricityInfo(float x, float y, short colorCode)
+        {
+            this.x = x;
+            this.y = y;
+            this.colorCode = colorCode;
+        }
     }
 }
