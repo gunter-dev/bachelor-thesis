@@ -26,6 +26,7 @@ public class LevelGenerator : MonoBehaviour
     private int _keysAmount;
 
     private bool _lightLayerPresent;
+    private bool _exitSpawned;
 
     private ColorPrefab[] _colorMappings;
 
@@ -169,12 +170,18 @@ public class LevelGenerator : MonoBehaviour
                 ice.transform.localScale = new Vector2(_iceSize, 1);
                 _iceSize = 0;
             }
+            else if (colorMapping.pathToPrefab == "Exit")
+            {
+                SpawnExit(x, y);
+                return;
+            }
 
             GameObject block = Spawn(colorMapping.pathToPrefab, new Vector3(x, flippedY, 1));
             if (block.CompareTag(Constants.FanTag))
             {
                 Spawn("Fan Area Effector", new Vector3(x, flippedY + 1, 1));
-                Spawn("Fan Area Effector", new Vector3(x, flippedY + 2, 1));
+                GameObject effector = Spawn("Fan Area Effector", new Vector3(x, flippedY + 2, 1));
+                effector.GetComponent<AreaEffector2D>().forceMagnitude = 20;
             }
             else if (block.CompareTag(Constants.GravityBlockTag))
             {
@@ -214,6 +221,40 @@ public class LevelGenerator : MonoBehaviour
     {
         if (_iceSize == 0) _initialIcePosition = new Vector2(x, y);
         _iceSize++;
+    }
+
+    private void SpawnExit(int x, int y)
+    {
+        if (_exitSpawned)
+        {
+            DisplayError("There cannot be multiple exits!");
+            return;
+        }
+
+        float resultX = x;
+        float resultY = y;
+
+        if (x == _mapWidth - 1 || GetPixelColor(x + 1, y).A != 0)
+        {
+            if (x == 0 || GetPixelColor(x - 1, y).A != 0)
+                DisplayError("There is not enough space for the exit. You have to leave a 2x2 pixels large space for it.");
+
+            resultX += Constants.MapStartingCoordinate;
+        }
+        
+        if (y == _mapHeight - 1 || GetPixelColor(x, y + 1).A != 0)
+        {
+            if (y == 0 || GetPixelColor(x, y - 1).A != 0)
+                DisplayError("There is not enough space for the exit. You have to leave a 2x2 pixels large space for it.");
+
+            resultY += Constants.MapStartingCoordinate;
+        }
+
+        float flippedY = _mapHeight - 1 - resultY;
+
+        Spawn("Exit", new Vector2(resultX, flippedY));
+        
+        _exitSpawned = true;
     }
 
     private void FlipBlockOnY(GameObject block)

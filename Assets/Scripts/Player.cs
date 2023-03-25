@@ -1,5 +1,6 @@
 using MenuScripts;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 
 public class Player : MonoBehaviour
 {
@@ -7,18 +8,21 @@ public class Player : MonoBehaviour
     private Animator _animator;
     private SpriteRenderer _spriteRenderer;
     private BoxCollider2D _collider;
+    private Light2D _light;
 
     private float _xMovement;
+    private float _slowedDownSpeedMultiplier;
+    private float _highSpeedMultiplier = Constants.InitialMultiplier;
+    private float _highJumpMultiplier = Constants.InitialMultiplier;
+    private float _nightVisionSpeedMultiplier = Constants.InitialMultiplier;
 
     public int keysNeeded;
 
-    private bool _movingRight = true;
     private bool _grounded;
     private bool _jumpAnimated;
     private bool _reversedGravity;
     private bool _sliding;
-    private bool _slowedDown;
-    private bool _onAccelerator;
+    private bool _isUnbreakable;
 
     private void Awake()
     {
@@ -26,15 +30,73 @@ public class Player : MonoBehaviour
         _animator = GetComponent<Animator>();
         _spriteRenderer = GetComponent<SpriteRenderer>();
         _collider = transform.GetComponent<BoxCollider2D>();
+        _light = GetComponent<Light2D>();
     }
 
     // Update is called once per frame
     void Update()
     {
         if (LobbyMenus.isPaused) return;
+        SwitchAbility();
         PlayerMovement();
         CalculateFlip();
         Animate();
+    }
+
+    private void SwitchAbility()
+    {
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            SwitchToDefaultAbilities();
+            Debug.Log("Default");
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            // switch to high speed
+            SwitchToDefaultAbilities();
+            _highSpeedMultiplier = Constants.HighSpeedMultiplier;
+            Debug.Log("High speed");
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha3))
+        {
+            // switch to high jump
+            SwitchToDefaultAbilities();
+            _highJumpMultiplier = Constants.HighJumpMultiplier;
+            Debug.Log("High jump");
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha4))
+        {
+            // switch to unbreakable
+            SwitchToDefaultAbilities();
+            _isUnbreakable = true;
+            _nightVisionSpeedMultiplier = Constants.NightVisionSpeedMultiplier;
+            Debug.Log("Unbreakable");
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha5))
+        {
+            // switch to night vision
+            SwitchToDefaultAbilities();
+            _light.pointLightInnerRadius = Constants.NightVisionLightRadius;
+            _light.pointLightOuterRadius = Constants.NightVisionLightRadius;
+            _light.color = Color.yellow;
+            
+            _nightVisionSpeedMultiplier = Constants.NightVisionSpeedMultiplier;
+            Debug.Log("Night vision");
+        }
+    }
+
+    private void SwitchToDefaultAbilities()
+    {
+        _highSpeedMultiplier = Constants.InitialMultiplier;
+        _highJumpMultiplier = Constants.InitialMultiplier;
+        
+        _light.pointLightInnerRadius = Constants.DefaultInnerLightRadius;
+        _light.pointLightOuterRadius = Constants.DefaultOuterLightRadius;
+        _light.color = Color.white;
+        
+        _nightVisionSpeedMultiplier = Constants.InitialMultiplier;
+
+        _isUnbreakable = false;
     }
 
     private void PlayerMovement()
@@ -45,10 +107,10 @@ public class Player : MonoBehaviour
 
         _xMovement = MovementSpeed();
         
-        if (_sliding && _playerBody.velocity.x < 7f)
+        if (_sliding && _playerBody.velocity.x < Constants.MovementSpeed)
             _playerBody.AddForce(new Vector2(_xMovement * 2f, 0f));
         else
-            transform.position += Time.deltaTime * Constants.MoveForce * new Vector3(_xMovement, 0f, 0f);
+            transform.position += Time.deltaTime * Constants.MovementSpeed * new Vector3(_xMovement, 0f, 0f);
 
         if (Input.GetButtonDown(Constants.Jump) && _grounded) PlayerJump();
     }
@@ -61,19 +123,14 @@ public class Player : MonoBehaviour
 
     private float MovementSpeed()
     {
-        if (!_grounded) return Input.GetAxis(Constants.Horizontal);
-
-        if (_onAccelerator) return Input.GetAxisRaw(Constants.Horizontal) + Constants.AcceleratorPlusSpeed;
-
-        return Input.GetAxisRaw(Constants.Horizontal) * (_slowedDown ? Constants.SlowedDownSpeed : 1);
+        float axis = _grounded ? Input.GetAxisRaw(Constants.Horizontal) : Input.GetAxis(Constants.Horizontal);
+        return axis * _slowedDownSpeedMultiplier * _highSpeedMultiplier * _nightVisionSpeedMultiplier;
     }
 
     private void PlayerJump()
     {
-        _playerBody.AddForce(
-            new Vector2(0f, Constants.JumpForce * (_reversedGravity ? -1 : 1) * (_slowedDown ? 0.5f : 1)), 
-            ForceMode2D.Impulse
-            );
+        float y = Constants.JumpForce * (_reversedGravity ? -1 : 1) * _slowedDownSpeedMultiplier * _highJumpMultiplier;
+        _playerBody.AddForce(new Vector2(0f, y), ForceMode2D.Impulse);
     }
     
     private void CalculateFlip()
@@ -85,8 +142,8 @@ public class Player : MonoBehaviour
         // it stops after running to the left
         if (_xMovement == 0) return;
         
-        _movingRight = _xMovement > 0;
-        _spriteRenderer.flipX = !_movingRight;
+        bool movingLeft = _xMovement < 0;
+        _spriteRenderer.flipX = movingLeft;
     }
 
     private void Animate()
@@ -116,11 +173,19 @@ public class Player : MonoBehaviour
             if (col.gameObject.CompareTag(Constants.GravityBlockTag)) HandleGravityChange();
 
             _sliding = col.gameObject.CompareTag(Constants.IceTag);
-            _slowedDown = col.gameObject.CompareTag(Constants.SlimeTag);
-            _onAccelerator = col.gameObject.CompareTag(Constants.AcceleratorTag);
+            _slowedDownSpeedMultiplier = col.gameObject.CompareTag(Constants.SlimeTag) ? Constants.SlowedDownSpeed : Constants.InitialMultiplier;
         }
-        
-        if (col.gameObject.CompareTag(Constants.SpikeTag) || col.gameObject.CompareTag(Constants.ExitTag)) KillPlayer();
+
+        if (col.gameObject.CompareTag(Constants.SpikeTag))
+        {
+            if (_isUnbreakable) Destroy(col.gameObject);
+            else KillPlayer();
+        }
+        else if (col.gameObject.CompareTag(Constants.ExitTag))
+        {
+            LobbyMenus.playerWon = true;
+            Destroy(gameObject);
+        }
     }
 
     private void HandleGravityChange()

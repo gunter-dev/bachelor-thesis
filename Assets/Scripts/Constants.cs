@@ -24,16 +24,19 @@ public static class Constants
     // Camera
     public const float MapStartingCoordinate = -0.5f;
     public const float CameraSizeChange = 0.7f;
-    public const float MaxRedTintOpacity = 0.7f;
-    public const float AppearingTime = 2;
     public const float CreateLevelPanelScreenPercentage = 100 / 1080f;
     
     // Player
-    public const float MoveForce = 7f;
+    public const float InitialMultiplier = 1f;
+    public const float MovementSpeed = 7f;
     public const float JumpForce = 10f;
-    public const float SlidingSpeed = 0.3f;
-    public const float SlowedDownSpeed = 0.4f;
-    public const float AcceleratorPlusSpeed = 0.6f;
+    public const float SlowedDownSpeed = 0.5f;
+    public const float HighSpeedMultiplier = 2f;
+    public const float HighJumpMultiplier = 1.5f;
+    public const float DefaultInnerLightRadius = 0f;
+    public const float DefaultOuterLightRadius = 8f;
+    public const float NightVisionLightRadius = 50f;
+    public const float NightVisionSpeedMultiplier = 0.3f;
     
     // Player animations
     public const string Idle = "Idle";
@@ -45,7 +48,6 @@ public static class Constants
     public const string Vertical = "Vertical";
     
     // Special blocks
-    public const float AcceleratorSpeed = 1.6f;
     public const float PlatformSpeed = 5;
     public const float DistanceTolerance = 0.01f;
     

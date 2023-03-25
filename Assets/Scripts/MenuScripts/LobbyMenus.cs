@@ -7,11 +7,16 @@ namespace MenuScripts
     {
         public static bool isPaused;
         public static bool isPlayerDead;
+        public static bool playerWon;
+        
         public GameObject pauseMenu;
         public GameObject deathScreen;
         public CanvasGroup deathScreenGroup;
+        public GameObject winScreen;
+        public CanvasGroup winScreenGroup;
 
-        private bool _fade;
+        private bool _deathScreenFade;
+        private bool _winScreenFade;
 
         void Update()
         {
@@ -25,17 +30,32 @@ namespace MenuScripts
             {
                 deathScreen.SetActive(true);
                 isPlayerDead = false;
-                _fade = true;
+                _deathScreenFade = true;
             }
-            if (_fade) DisplayDeathScreen();
+            if (_deathScreenFade) DisplayDeathScreen();
+
+            if (playerWon)
+            {
+                winScreen.SetActive(true);
+                playerWon = false;
+                _winScreenFade = true;
+            }
+
+            if (_winScreenFade) DisplayWinScreen();
         }
         
         private void DisplayDeathScreen()
         {
             if (deathScreenGroup.alpha < 1) deathScreenGroup.alpha += Time.deltaTime;
-            else _fade = false;
+            else _deathScreenFade = false;
         }
 
+        private void DisplayWinScreen()
+        {
+            if (winScreenGroup.alpha < 1) winScreenGroup.alpha += Time.deltaTime;
+            else _winScreenFade = false;
+        }
+        
         private void Pause()
         {
             pauseMenu.SetActive(true);
