@@ -13,9 +13,12 @@ namespace MenuScripts
             };
             var path = StandaloneFileBrowser.OpenFilePanel("Open File", "", extensions, false);
 
-            GlobalVariables.pathToLevel = path[0];
-            GlobalVariables.createLevelMode = true;
-            SceneManager.LoadScene(Constants.CreateLevelScene);
+            if (path.Length != 0)
+            {
+                GlobalVariables.pathToLevel = path[0];
+                GlobalVariables.createLevelMode = true;
+                SceneManager.LoadScene(Constants.CreateLevelScene);
+            }
         }
     }
 }

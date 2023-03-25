@@ -1,10 +1,8 @@
 using UnityEngine;
-using Color = UnityEngine.Color;
 
 public class MainCamera : MonoBehaviour
 {
     private Transform _playerTransform;
-    private SpriteRenderer _playerSpriteRenderer;
     private Vector3 _cameraPosition;
 
     private float _defaultCameraSize;
@@ -24,7 +22,6 @@ public class MainCamera : MonoBehaviour
     {
         GameObject player = GameObject.FindWithTag(Constants.PlayerTag);
         _playerTransform = player.transform;
-        _playerSpriteRenderer = player.GetComponent<SpriteRenderer>();
         
         _camera = GetComponent<Camera>();
         _aspectRatio = (float)Screen.width / Screen.height;
@@ -48,7 +45,7 @@ public class MainCamera : MonoBehaviour
         {
             float newSize = _camera.orthographicSize - (Input.mouseScrollDelta.y * Constants.CameraSizeChange);
             _camera.orthographicSize = Mathf.Clamp(newSize, 5f, _defaultCameraSize);
-            FocusPlayer(Input.mouseScrollDelta.y < 0);
+            FocusPlayer(true);
         } else FocusPlayer(false);
     }
 
@@ -57,8 +54,7 @@ public class MainCamera : MonoBehaviour
         CalculateCameraLimits();
         
         var current = _cameraPosition = transform.position;
-        Vector3 cameraOffsetFromPlayer = new Vector3(_playerSpriteRenderer.flipX ? -5f : 5f, 0, 0);
-        Vector3 playerPosition = _playerTransform.position + cameraOffsetFromPlayer;
+        Vector3 playerPosition = _playerTransform.position;
 
         _cameraPosition.x = Mathf.Clamp(playerPosition.x, _minX, _maxX);
         _cameraPosition.y = Mathf.Clamp(playerPosition.y, _minY, _maxY);
@@ -74,7 +70,7 @@ public class MainCamera : MonoBehaviour
         
         _minX = Constants.MapStartingCoordinate + _currentCameraSize * _aspectRatio;
         _maxX = Constants.MapStartingCoordinate + GlobalVariables.mapWidth - _currentCameraSize * _aspectRatio;
-        
+
         _minY = Constants.MapStartingCoordinate + _currentCameraSize;
         _maxY = Constants.MapStartingCoordinate + GlobalVariables.mapHeight - _currentCameraSize;
 

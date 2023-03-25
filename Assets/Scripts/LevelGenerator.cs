@@ -29,6 +29,9 @@ public class LevelGenerator : MonoBehaviour
 
     private ColorPrefab[] _colorMappings;
 
+    private Vector2 _initialIcePosition;
+    private int _iceSize;
+
     public TMP_Text warningText;
 
     // Start is called before the first frame update
@@ -63,7 +66,7 @@ public class LevelGenerator : MonoBehaviour
             new (Color.FromArgb(255, 0, 0), "Player"),
             new (Color.FromArgb(255, 255, 255), "Grounds/Accelerator"),
             new (Color.FromArgb(0, 255, 0), "Grounds/Slime"),
-            new (Color.FromArgb(0, 255, 255), "Grounds/Ice"),
+            new (Color.FromArgb(0, 255, 255), "Grounds/Ice Sprite"),
             new (Color.FromArgb(255, 0, 255), "Spike"),
             new (Color.FromArgb(0, 0, 255), "Grounds/Gravity"),
             new (Color.FromArgb(255, 255, 0), "Grounds/Fan"),
@@ -146,18 +149,26 @@ public class LevelGenerator : MonoBehaviour
         int flippedY = _mapHeight - 1 - y;
 
         // The pixel is transparent, we want to ignore it.
-        if (pixelColor.A == 0) return;
+        if (pixelColor.A < 255) return;
 
-        if (pixelColor.Equals(Color.FromArgb(0, 0, 0)))
+        if (pixelColor is { R: 0, G: 0, B: < 4 })
         {
-            int randomValue = Random.Range(1, 4);
-            Spawn("Grounds/Grass Ground " + randomValue, new Vector3(x, flippedY, 1));
+            Spawn(GetRegularBlock(pixelColor.B), new Vector2(x, flippedY));
             return;
         }
-        
+
         foreach (ColorPrefab colorMapping in _colorMappings)
         {
             if (!colorMapping.color.Equals(pixelColor)) continue;
+
+            if (colorMapping.pathToPrefab == "Grounds/Ice Sprite") HandleIce(x, flippedY);
+            else if (_iceSize > 0)
+            {
+                Vector2 position = new Vector2(_initialIcePosition.x + _iceSize / 2f + Constants.MapStartingCoordinate, _initialIcePosition.y);
+                GameObject ice = Spawn("Grounds/Ice Collider", position);
+                ice.transform.localScale = new Vector2(_iceSize, 1);
+                _iceSize = 0;
+            }
 
             GameObject block = Spawn(colorMapping.pathToPrefab, new Vector3(x, flippedY, 1));
             if (block.CompareTag(Constants.FanTag))
@@ -171,15 +182,38 @@ public class LevelGenerator : MonoBehaviour
                 if (flippedY == _mapHeight - 1 || GetPixelColor(x, y - 1).A != 0)
                     FlipBlockOnY(block);
             }
-            else if (block.CompareTag(Constants.PlayerTag))
-            {
-                _player = block;
-            }
+            else if (block.CompareTag(Constants.PlayerTag)) _player = block;
 
             return;
         }
 
         DisplayWarning("Main layer - (" + x + ", " + y + "): There is an invalid color on these coordinates. This pixel has been ignored.");
+    }
+
+    private string GetRegularBlock(int blue)
+    {
+        int randomValue;
+        switch (blue)
+        {
+            case 0:
+                randomValue = Random.Range(1, 4);
+                return "Grounds/Grass Ground " + randomValue;
+            case 1:
+                randomValue = Random.Range(1, 5);
+                return "Walls/Left Wall " + randomValue;
+            case 2:
+                randomValue = Random.Range(1, 5);
+                return "Walls/Right Wall " + randomValue;
+        }
+
+
+        return "Grounds/Grass Ground 1";
+    }
+
+    private void HandleIce(int x, int y)
+    {
+        if (_iceSize == 0) _initialIcePosition = new Vector2(x, y);
+        _iceSize++;
     }
 
     private void FlipBlockOnY(GameObject block)
@@ -323,8 +357,11 @@ public class LevelGenerator : MonoBehaviour
 
         Camera mainCamera = Resources.Load<Camera>("Main Camera");
         mainCamera = Instantiate(mainCamera, cameraPosition, Quaternion.identity);
+
+        float mapAspectRatio = (float)_mapWidth / _mapHeight;
+        float screenAspectRatio = (float)Screen.width / Screen.height;
         
-        mainCamera.orthographicSize = _mapHeight / 2f;
+        mainCamera.orthographicSize = (_mapHeight / 2f) * (mapAspectRatio / screenAspectRatio);
     }
 
     private Color GetPixelColor(int x, int y)

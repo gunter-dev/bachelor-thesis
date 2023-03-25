@@ -45,7 +45,7 @@ public class Player : MonoBehaviour
 
         _xMovement = MovementSpeed();
         
-        if (_sliding && _playerBody.velocity.x < 10f)
+        if (_sliding && _playerBody.velocity.x < 7f)
             _playerBody.AddForce(new Vector2(_xMovement * 2f, 0f));
         else
             transform.position += Time.deltaTime * Constants.MoveForce * new Vector3(_xMovement, 0f, 0f);
