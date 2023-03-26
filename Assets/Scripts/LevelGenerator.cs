@@ -199,6 +199,9 @@ public class LevelGenerator : MonoBehaviour
             case 2:
                 randomValue = Random.Range(1, 5);
                 return "Walls/Right Wall " + randomValue;
+            case 3:
+                randomValue = Random.Range(1, 3);
+                return "Grounds/Top " + randomValue;
         }
 
 
