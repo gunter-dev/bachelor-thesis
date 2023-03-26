@@ -9,6 +9,7 @@ public class Player : MonoBehaviour
     private SpriteRenderer _spriteRenderer;
     private BoxCollider2D _collider;
     private Light2D _light;
+    private AudioSource _audioSource;
 
     private float _xMovement;
     private float _slowedDownSpeedMultiplier;
@@ -24,6 +25,10 @@ public class Player : MonoBehaviour
     private bool _sliding;
     private bool _isUnbreakable;
 
+    private AudioClip _stepSound;
+    private AudioClip _jumpSound;
+    private AudioClip _landSound;
+
     private void Awake()
     {
         _playerBody = GetComponent<Rigidbody2D>();
@@ -31,6 +36,16 @@ public class Player : MonoBehaviour
         _spriteRenderer = GetComponent<SpriteRenderer>();
         _collider = transform.GetComponent<BoxCollider2D>();
         _light = GetComponent<Light2D>();
+        _audioSource = GetComponent<AudioSource>();
+        
+        InitializeSounds();
+    }
+
+    private void InitializeSounds()
+    {
+        _stepSound = Resources.Load<AudioClip>("Sounds/Step");
+        _jumpSound = Resources.Load<AudioClip>("Sounds/Jump");
+        _landSound = Resources.Load<AudioClip>("Sounds/Land");
     }
 
     // Update is called once per frame
@@ -102,7 +117,11 @@ public class Player : MonoBehaviour
     private void PlayerMovement()
     {
         _grounded = IsGrounded();
-        if ((!_grounded && !_jumpAnimated) || _grounded) _jumpAnimated = false;
+        if (_grounded && _jumpAnimated)
+        {
+            _jumpAnimated = false;
+            PlaySound(_landSound);
+        }
         if (!_grounded) CheckPlayerIsOnMap();
 
         _xMovement = MovementSpeed();
@@ -131,6 +150,7 @@ public class Player : MonoBehaviour
     {
         float y = Constants.JumpForce * (_reversedGravity ? -1 : 1) * _slowedDownSpeedMultiplier * _highJumpMultiplier;
         _playerBody.AddForce(new Vector2(0f, y), ForceMode2D.Impulse);
+        PlaySound(_jumpSound);
     }
     
     private void CalculateFlip()
@@ -207,5 +227,19 @@ public class Player : MonoBehaviour
         Bounds bounds = _collider.bounds;
         Vector2 direction = _reversedGravity ? Vector2.up : Vector2.down;
         return Physics2D.BoxCast(bounds.center, bounds.size, 0f, direction, 0.1f, layer);
+    }
+
+    // ReSharper disable once UnusedMember.Local
+    private void Step()
+    {
+        // This function is called from animation - Animation Event
+        _audioSource.clip = _stepSound;
+        _audioSource.Play();
+    }
+
+    private void PlaySound(AudioClip sound)
+    {
+        _audioSource.clip = sound;
+        _audioSource.Play();
     }
 }
