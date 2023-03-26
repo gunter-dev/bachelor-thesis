@@ -74,7 +74,11 @@ public class MainCamera : MonoBehaviour
         _minY = Constants.MapStartingCoordinate + _currentCameraSize;
         _maxY = Constants.MapStartingCoordinate + GlobalVariables.mapHeight - _currentCameraSize;
 
-        if (GlobalVariables.createLevelMode) _minY -= CreateLevelPanelSize();
+        if (GlobalVariables.createLevelMode)
+        {
+            _maxY += CreateLevelPanelSize();
+            _minY -= CreateLevelPanelSize();
+        }
     }
 
     private void RenderBackground()

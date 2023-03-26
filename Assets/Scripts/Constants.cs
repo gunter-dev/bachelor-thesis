@@ -2,7 +2,6 @@ public static class Constants
 {
     // Tags
     public const string PlayerTag = "Player";
-    public const string FanTag = "Fan";
     public const string GravityBlockTag = "Gravity";
     public const string AcceleratorTag = "Accelerator";
     public const string GroundTag = "Ground";

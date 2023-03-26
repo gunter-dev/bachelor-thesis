@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.ComponentModel;
-using System.IO;
 using System.Linq;
 using Color = System.Drawing.Color;
 
@@ -16,7 +15,6 @@ using Random = UnityEngine.Random;
 public class LevelGenerator : MonoBehaviour
 {
     private Tiff _levelImage;
-    private string _pathToLevelImage;
 
     private int _mapWidth;
     private int _mapHeight;
@@ -35,11 +33,8 @@ public class LevelGenerator : MonoBehaviour
 
     public TMP_Text warningText;
 
-    // Start is called before the first frame update
     public void Start()
     {
-        InitializePath();
-
         InstantiateColorMappings();
         ImportImageFromFile();
         GenerateLevel();
@@ -49,16 +44,9 @@ public class LevelGenerator : MonoBehaviour
 
     void ReloadLevel()
     {
-        GlobalVariables.pathToLevel = _pathToLevelImage;
         SceneManager.LoadScene(Constants.CreateLevelScene);
     }
 
-    private void InitializePath()
-    {
-        _pathToLevelImage = GlobalVariables.pathToLevel ?? GetFile("Assets/first-test-level-69.tif");
-        GlobalVariables.pathToLevel = null;
-    }
-    
     private void InstantiateColorMappings()
     {
         _colorMappings = new ColorPrefab[]
@@ -70,7 +58,6 @@ public class LevelGenerator : MonoBehaviour
             new (Color.FromArgb(0, 255, 255), "Grounds/Ice Sprite"),
             new (Color.FromArgb(255, 0, 255), "Spike"),
             new (Color.FromArgb(0, 0, 255), "Grounds/Gravity"),
-            new (Color.FromArgb(255, 255, 0), "Grounds/Fan"),
             new (Color.FromArgb(100, 0, 0), "Grounds/Box"),
             new (Color.FromArgb(100, 100, 0), "Grounds/Disappearing Ground"),
             new (Color.FromArgb(100, 100, 100), "Exit")
@@ -79,7 +66,7 @@ public class LevelGenerator : MonoBehaviour
 
     private void ImportImageFromFile()
     {
-        _levelImage = Tiff.Open(_pathToLevelImage, "r");
+        _levelImage = Tiff.Open(GlobalVariables.pathToLevel, "r");
 
         if (_levelImage != null)
         {
@@ -91,7 +78,7 @@ public class LevelGenerator : MonoBehaviour
 
             int imageSize = _mapWidth * _mapHeight;
             _raster = new int[imageSize];
-        } else DisplayError("Error opening file: '" + _pathToLevelImage + "'. Please try a different file.");
+        } else DisplayError(GlobalVariables.pathToLevel + Messages.FileOpeningError);
     }
 
     private void GenerateLevel()
@@ -122,7 +109,7 @@ public class LevelGenerator : MonoBehaviour
                     GenerateLights();
                     break;
                 default: 
-                    DisplayWarning("Unknown layer name: '" + pageName + "'. This layer was ignored.");
+                    DisplayWarning(Messages.LayerError(pageName));
                     break;
             }
         }
@@ -130,6 +117,8 @@ public class LevelGenerator : MonoBehaviour
         GenerateGlobalLight();
         Physics2D.gravity = new Vector2(0, -9.8f);
         _levelImage.Close();
+        
+        if (!_exitSpawned) DisplayWarning(Messages.MissingExit);
     }
 
     private void GenerateMain()
@@ -177,24 +166,23 @@ public class LevelGenerator : MonoBehaviour
             }
 
             GameObject block = Spawn(colorMapping.pathToPrefab, new Vector3(x, flippedY, 1));
-            if (block.CompareTag(Constants.FanTag))
-            {
-                Spawn("Fan Area Effector", new Vector3(x, flippedY + 1, 1));
-                GameObject effector = Spawn("Fan Area Effector", new Vector3(x, flippedY + 2, 1));
-                effector.GetComponent<AreaEffector2D>().forceMagnitude = 20;
-            }
-            else if (block.CompareTag(Constants.GravityBlockTag))
+            
+            if (block.CompareTag(Constants.GravityBlockTag))
             {
                 if (flippedY == 0) return;
                 if (flippedY == _mapHeight - 1 || GetPixelColor(x, y - 1).A != 0)
                     FlipBlockOnY(block);
             }
-            else if (block.CompareTag(Constants.PlayerTag)) _player = block;
+            else if (block.CompareTag(Constants.PlayerTag))
+            {
+                if (_player) DisplayError(Messages.MultipleCharacters);
+                _player = block;
+            }
 
             return;
         }
 
-        DisplayWarning("Main layer - (" + x + ", " + y + "): There is an invalid color on these coordinates. This pixel has been ignored.");
+        DisplayWarning(Messages.LayerCoordinatesWarning("Main layer", x, y));
     }
 
     private string GetRegularBlock(int blue)
@@ -227,7 +215,7 @@ public class LevelGenerator : MonoBehaviour
     {
         if (_exitSpawned)
         {
-            DisplayError("There cannot be multiple exits!");
+            DisplayError(Messages.MultipleExits);
             return;
         }
 
@@ -236,16 +224,14 @@ public class LevelGenerator : MonoBehaviour
 
         if (x == _mapWidth - 1 || GetPixelColor(x + 1, y).A != 0)
         {
-            if (x == 0 || GetPixelColor(x - 1, y).A != 0)
-                DisplayError("There is not enough space for the exit. You have to leave a 2x2 pixels large space for it.");
+            if (x == 0 || GetPixelColor(x - 1, y).A != 0) DisplayError(Messages.NotEnoughSpaceForExit);
 
             resultX += Constants.MapStartingCoordinate;
         }
         
         if (y == _mapHeight - 1 || GetPixelColor(x, y + 1).A != 0)
         {
-            if (y == 0 || GetPixelColor(x, y - 1).A != 0)
-                DisplayError("There is not enough space for the exit. You have to leave a 2x2 pixels large space for it.");
+            if (y == 0 || GetPixelColor(x, y - 1).A != 0) DisplayError(Messages.NotEnoughSpaceForExit);
 
             resultY += Constants.MapStartingCoordinate;
         }
@@ -347,7 +333,7 @@ public class LevelGenerator : MonoBehaviour
                 }
                 else
                 {
-                    DisplayWarning("Keys layer - (" + x + ", " + y + "): There is an invalid color on these coordinates. This pixel has been ignored.");
+                    DisplayWarning(Messages.LayerCoordinatesWarning("Keys layer", x, y));
                 }
             }
         }
@@ -428,11 +414,6 @@ public class LevelGenerator : MonoBehaviour
     private static GameObject Spawn(string pathName, Vector3 position)
     {
         return Instantiate(GetPrefab(pathName), position, Quaternion.identity);
-    }
-
-    private static string GetFile(string fileName)
-    {
-        return Directory.GetCurrentDirectory() + "/" + fileName;
     }
 
     private void DisplayWarning(string warning)
