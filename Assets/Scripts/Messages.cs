@@ -12,6 +12,9 @@ public static class Messages
     public const string NotEnoughSpaceForExit =
         "There is not enough space for the exit. You have to leave a 2x2 pixels large space for it.";
 
+    public const string KeysWithoutKeyHoleWarning =
+        "There are some keys, that don't have a key hole. Those have been ignored";
+
     public static string LayerError(string layerName)
     {
         return "Unknown layer name: '" + layerName + "'. This layer was ignored.";
@@ -21,5 +24,10 @@ public static class Messages
     {
         return layerName + " - (" + x + ", " + y +
                "): There is an invalid color on these coordinates. This pixel has been ignored.";
+    }
+
+    public static string KeyHoleWithoutKeysWarning(int x, int y)
+    {
+        return "(" + x + ", " + y + "): A key hole on these coordinates has no keys assigned to it!";
     }
 }

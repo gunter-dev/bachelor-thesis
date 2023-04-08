@@ -1,16 +1,12 @@
 namespace BlockScripts
 {
-    public class PlatformInfo
+    public class PlatformInfo : Coordinates
     {
-        public readonly float x, y;
-
         public readonly short colorCode;
         public readonly short size;
 
-        public PlatformInfo(float x, float y, short colorCode, short size)
+        public PlatformInfo(int x, int y, short colorCode, short size) : base(x, y)
         {
-            this.x = x;
-            this.y = y;
             this.colorCode = colorCode;
             this.size = size;
         }

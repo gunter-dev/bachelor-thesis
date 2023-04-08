@@ -17,8 +17,6 @@ public class Player : MonoBehaviour
     private float _highJumpMultiplier = Constants.InitialMultiplier;
     private float _nightVisionSpeedMultiplier = Constants.InitialMultiplier;
 
-    public int keysNeeded;
-
     private bool _grounded;
     private bool _jumpAnimated;
     private bool _reversedGravity;

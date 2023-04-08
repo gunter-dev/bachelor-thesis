@@ -21,7 +21,6 @@ public class LevelGenerator : MonoBehaviour
     private int[] _raster;
 
     private GameObject _player;
-    private int _keysAmount;
 
     private bool _lightLayerPresent;
     private bool _exitSpawned;
@@ -135,15 +134,11 @@ public class LevelGenerator : MonoBehaviour
     private void GenerateTile(int x, int y)
     {
         Color pixelColor = GetPixelColor(x, y);
-
-        int flippedY = _mapHeight - 1 - y;
-
-        // The pixel is transparent, we want to ignore it.
         if (pixelColor.A < 255) return;
 
         if (pixelColor is { R: 0, G: 0, B: < 4 })
         {
-            Spawn(GetRegularBlock(pixelColor.B), new Vector2(x, flippedY));
+            Spawn(GetRegularBlock(pixelColor.B), new Vector2(x, GetFlippedY(y)));
             return;
         }
 
@@ -151,7 +146,7 @@ public class LevelGenerator : MonoBehaviour
         {
             if (!colorMapping.color.Equals(pixelColor)) continue;
 
-            if (colorMapping.pathToPrefab == "Grounds/Ice Sprite") HandleIce(x, flippedY);
+            if (colorMapping.pathToPrefab == "Grounds/Ice Sprite") HandleIce(x, GetFlippedY(y));
             else if (_iceSize > 0)
             {
                 Vector2 position = new Vector2(_initialIcePosition.x + _iceSize / 2f + Constants.MapStartingCoordinate, _initialIcePosition.y);
@@ -165,12 +160,13 @@ public class LevelGenerator : MonoBehaviour
                 return;
             }
 
-            GameObject block = Spawn(colorMapping.pathToPrefab, new Vector3(x, flippedY, 1));
+            GameObject block = Spawn(colorMapping.pathToPrefab, new Vector3(x, GetFlippedY(y), 1));
             
             if (block.CompareTag(Constants.GravityBlockTag))
             {
-                if (flippedY == 0) return;
-                if (flippedY == _mapHeight - 1 || GetPixelColor(x, y - 1).A != 0)
+                if (GetFlippedY(y) == 0) return;
+                
+                if (GetFlippedY(y) == _mapHeight - 1 || GetPixelColor(x, y - 1).A != 0)
                     FlipBlockOnY(block);
             }
             else if (block.CompareTag(Constants.PlayerTag))
@@ -240,7 +236,6 @@ public class LevelGenerator : MonoBehaviour
         }
 
         float flippedY = _mapHeight - 1 - resultY;
-
         Spawn("Exit", new Vector2(resultX, flippedY));
         
         _exitSpawned = true;
@@ -263,13 +258,10 @@ public class LevelGenerator : MonoBehaviour
             for (int y = 0; y < _mapHeight; y++)
             {
                 Color pixelColor = GetPixelColor(x, y);
-
                 if (pixelColor.A == 0) continue;
-                
-                int flippedY = _mapHeight - 1 - y;
 
-                if (blocks.ContainsKey(pixelColor.R)) blocks[pixelColor.R].Add(new ElectricityInfo(x, flippedY, pixelColor.B));
-                else blocks.Add(pixelColor.R, new List<ElectricityInfo> { new (x, flippedY, pixelColor.B) });
+                blocks.TryAdd(pixelColor.R, new List<ElectricityInfo>());
+                blocks[pixelColor.R].Add(new ElectricityInfo(x, GetFlippedY(y), pixelColor.B));
             }
         }
 
@@ -292,13 +284,10 @@ public class LevelGenerator : MonoBehaviour
             for (int y = 0; y < _mapHeight; y++)
             {
                 Color pixelColor = GetPixelColor(x, y);
-
                 if (pixelColor.A == 0) continue;
-                
-                int flippedY = _mapHeight - 1 - y;
 
-                if (platforms.ContainsKey(pixelColor.R)) platforms[pixelColor.R].Add(new PlatformInfo(x, flippedY, pixelColor.B, pixelColor.G));
-                else platforms.Add(pixelColor.R, new List<PlatformInfo> { new (x, flippedY, pixelColor.B, pixelColor.G) });
+                platforms.TryAdd(pixelColor.R, new List<PlatformInfo>());
+                platforms[pixelColor.R].Add(new PlatformInfo(x, GetFlippedY(y), pixelColor.B, pixelColor.G));
             }
         }
 
@@ -315,33 +304,45 @@ public class LevelGenerator : MonoBehaviour
 
     private void GenerateKeys()
     {
+        var keyHoles = new List<KeyHoleInfo>();
+        var keys = new Dictionary<int, List<Coordinates>>();
+        
         for (int x = 0; x < _mapWidth; x++)
         {
             for (int y = 0; y < _mapHeight; y++)
             {
                 Color pixelColor = GetPixelColor(x, y);
-
                 if (pixelColor.A == 0) continue;
 
-                int flippedY = _mapHeight - 1 - y;
-                
-                if (pixelColor.Equals(Color.FromArgb(0, 0, 0)))
+                if (pixelColor is { R: 0, G: 0, B: 0 })
                 {
-                    Spawn("Key", new Vector3(x, flippedY, 1));
-                    _keysAmount++;
-                }
-                else if (pixelColor.Equals(Color.FromArgb(255, 255, 255)))
-                {
-                    Spawn("Grounds/Key Hole", new Vector3(x, flippedY, 1));
+                    keys.TryAdd(pixelColor.A, new List<Coordinates>());
+                    keys[pixelColor.A].Add(new Coordinates(x, GetFlippedY(y)));
                 }
                 else
                 {
-                    DisplayWarning(Messages.LayerCoordinatesWarning("Keys layer", x, y));
+                    keyHoles.Add(new KeyHoleInfo(x, GetFlippedY(y), pixelColor.A, pixelColor));
                 }
             }
         }
 
-        _player.GetComponent<Player>().keysNeeded = _keysAmount;
+        if (keyHoles.Count < keys.Count) DisplayWarning(Messages.KeysWithoutKeyHoleWarning);
+
+        foreach (var keyHole in keyHoles)
+        {
+            // TODO: error handling
+            GameObject holeObject = Spawn("Grounds/Key Hole", new Vector2(keyHole.x, keyHole.y));
+            
+            List<Coordinates> resKeys = new();
+            if (!keys.ContainsKey(keyHole.groupId))
+                DisplayWarning(Messages.KeyHoleWithoutKeysWarning(keyHole.x, keyHole.y));
+            else 
+                holeObject.GetComponent<KeyHoleController>().keys = keys[keyHole.groupId];
+
+            UnityEngine.Color lightColor = ParseToUnityColorForKeys(keyHole.lightColor);
+            lightColor.a = 1;
+            holeObject.GetComponent<KeyHoleController>().lightColor = lightColor;
+        }
     }
 
     private void GenerateLights()
@@ -351,15 +352,12 @@ public class LevelGenerator : MonoBehaviour
             for (int y = 0; y < _mapHeight; y++)
             {
                 Color pixelColor = GetPixelColor(x, y);
-
                 if (pixelColor.A == 0) continue;
-
-                int flippedY = _mapHeight - 1 - y;
 
                 Light2D spotLight = Resources.Load<Light2D>("Spot Light");
                 spotLight.color = ParseToUnityColor(pixelColor);
 
-                Instantiate(spotLight, new Vector2(x, flippedY), Quaternion.identity);
+                Instantiate(spotLight, new Vector2(x, GetFlippedY(y)), Quaternion.identity);
             }
         }
     }
@@ -367,17 +365,7 @@ public class LevelGenerator : MonoBehaviour
     private void GenerateGlobalLight()
     {
         Light2D globalLight = Instantiate(Resources.Load<Light2D>("Global Light"), Vector3.zero, Quaternion.identity);
-        if (!_lightLayerPresent)
-        {
-            globalLight.intensity = 0.6f;
-
-            Light2D spotLight = Resources.Load<Light2D>("Spot Light");
-            spotLight = Instantiate(spotLight, new Vector2(10, 16), Quaternion.identity);
- 
-            spotLight.color = UnityEngine.Color.white;
-            spotLight.pointLightInnerRadius = 5;
-            spotLight.pointLightOuterRadius = 10;
-        }
+        if (!_lightLayerPresent) globalLight.intensity = 0.6f;
     }
 
     private void SpawnCamera()
@@ -407,6 +395,16 @@ public class LevelGenerator : MonoBehaviour
     private UnityEngine.Color ParseToUnityColor(Color srcColor)
     {
         return new UnityEngine.Color(srcColor.R / 255f, srcColor.G / 255f, srcColor.B / 255f, srcColor.A / 255f);
+    }
+    
+    private UnityEngine.Color ParseToUnityColorForKeys(Color srcColor)
+    {
+        return new UnityEngine.Color((float)srcColor.R / srcColor.A, (float)srcColor.G / srcColor.A, (float)srcColor.B / srcColor.A, 1);
+    }
+
+    private int GetFlippedY(int y)
+    {
+        return _mapHeight - 1 - y;
     }
 
     private static GameObject GetPrefab(string pathName)
