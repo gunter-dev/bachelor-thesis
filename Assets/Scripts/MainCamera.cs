@@ -28,6 +28,7 @@ public class MainCamera : MonoBehaviour
         
         // The orthographicSize is half the size of the vertical viewing volume. -> https://docs.unity3d.com/ScriptReference/Camera-orthographicSize.html
         // At the Start, the orthographic size of camera is the same, as the half of map height
+        if (_camera.orthographicSize > Constants.MaxCameraSize) _camera.orthographicSize = Constants.MaxCameraSize;
         _defaultCameraSize = _currentCameraSize = _camera.orthographicSize;
         
         RenderBackground();

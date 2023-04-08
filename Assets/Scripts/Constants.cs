@@ -24,11 +24,12 @@ public static class Constants
     public const float MapStartingCoordinate = -0.5f;
     public const float CameraSizeChange = 0.7f;
     public const float CreateLevelPanelScreenPercentage = 100 / 1080f;
+    public const float MaxCameraSize = 20f;
     
     // Player
     public const float InitialMultiplier = 1f;
     public const float MovementSpeed = 7f;
-    public const float JumpForce = 10f;
+    public const float JumpForce = 9.5f;
     public const float SlowedDownSpeed = 0.5f;
     public const float HighSpeedMultiplier = 2f;
     public const float HighJumpMultiplier = 1.5f;

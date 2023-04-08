@@ -15,6 +15,9 @@ public static class Messages
     public const string KeysWithoutKeyHoleWarning =
         "There are some keys, that don't have a key hole. Those have been ignored";
 
+    public const string PlayerCannotBeSpawned =
+        "Player can't be spawned! There has to be one empty pixel above his spawning point.";
+
     public static string LayerError(string layerName)
     {
         return "Unknown layer name: '" + layerName + "'. This layer was ignored.";

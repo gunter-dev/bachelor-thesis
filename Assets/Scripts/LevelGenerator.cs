@@ -172,6 +172,10 @@ public class LevelGenerator : MonoBehaviour
             else if (block.CompareTag(Constants.PlayerTag))
             {
                 if (_player) DisplayError(Messages.MultipleCharacters);
+                if (GetFlippedY(y) == _mapHeight - 1 || GetPixelColor(x, y - 1).A != 0) {
+                    DisplayError(Messages.PlayerCannotBeSpawned);
+                    return;
+                }
                 _player = block;
             }
 
@@ -224,14 +228,12 @@ public class LevelGenerator : MonoBehaviour
         if (x == _mapWidth - 1 || GetPixelColor(x + 1, y).A != 0)
         {
             if (x == 0 || GetPixelColor(x - 1, y).A != 0) DisplayError(Messages.NotEnoughSpaceForExit);
-
             resultX += Constants.MapStartingCoordinate;
         }
         
         if (y == _mapHeight - 1 || GetPixelColor(x, y + 1).A != 0)
         {
             if (y == 0 || GetPixelColor(x, y - 1).A != 0) DisplayError(Messages.NotEnoughSpaceForExit);
-
             resultY += Constants.MapStartingCoordinate;
         }
 
