@@ -84,17 +84,27 @@ public class MainCamera : MonoBehaviour
 
     private void RenderBackground()
     {
-        Vector3 position = new Vector3(
-            (GlobalVariables.mapWidth / 2) + Constants.MapStartingCoordinate,
-            (GlobalVariables.mapHeight / 2) + Constants.MapStartingCoordinate,
-            0
-            );
-
-        GameObject background = Resources.Load<GameObject>("Background");
-        background = Instantiate(background, position, Quaternion.identity);
-
+        GameObject background = Resources.Load<GameObject>("ExtendableBackground");
         SpriteRenderer backgroundSpriteRenderer = background.GetComponent<SpriteRenderer>();
         Vector3 backgroundSize = backgroundSpriteRenderer.bounds.size;
+
+        Vector3 position = new Vector3(
+            (backgroundSize.x / 2) + Constants.MapStartingCoordinate,
+            (backgroundSize.y / 2) + Constants.MapStartingCoordinate,
+            0
+        );
+
+        while (position.x - backgroundSize.x / 2 < GlobalVariables.mapWidth)
+        {
+            while (position.y - backgroundSize.y / 2 < GlobalVariables.mapHeight)
+            {
+                Instantiate(background, position, Quaternion.identity);
+                position.y += backgroundSize.y;
+            }
+            
+            position.x += backgroundSize.x;
+            position.y = (backgroundSize.y / 2) + Constants.MapStartingCoordinate;
+        }
         
         background.transform.localScale = new Vector2(GlobalVariables.mapWidth / backgroundSize.x, GlobalVariables.mapHeight / backgroundSize.y);
     }

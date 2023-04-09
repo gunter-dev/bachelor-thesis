@@ -124,9 +124,9 @@ public class Player : MonoBehaviour
 
         _xMovement = MovementSpeed();
         
-        if (_sliding && _playerBody.velocity.x < Constants.MovementSpeed)
-            _playerBody.AddForce(new Vector2(_xMovement * 2f, 0f));
-        else
+        if (_sliding && _playerBody.velocity.x < Constants.MovementSpeed && _grounded)
+            _playerBody.AddForce(new Vector2(_xMovement * 5f, 0f));
+        else if (!_sliding)
             transform.position += Time.deltaTime * Constants.MovementSpeed * new Vector3(_xMovement, 0f, 0f);
 
         if (Input.GetButtonDown(Constants.Jump) && _grounded) PlayerJump();
