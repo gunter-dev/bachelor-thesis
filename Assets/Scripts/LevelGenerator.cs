@@ -203,8 +203,6 @@ public class LevelGenerator : MonoBehaviour
                 randomValue = Random.Range(1, 3);
                 return "Grounds/Top " + randomValue;
         }
-
-
         return "Grounds/Grass Ground 1";
     }
 
@@ -306,7 +304,7 @@ public class LevelGenerator : MonoBehaviour
 
     private void GenerateKeys()
     {
-        var keyHoles = new List<KeyHoleInfo>();
+        var doors = new List<DoorInfo>();
         var keys = new Dictionary<int, List<Coordinates>>();
         
         for (int x = 0; x < _mapWidth; x++)
@@ -323,27 +321,25 @@ public class LevelGenerator : MonoBehaviour
                 }
                 else
                 {
-                    keyHoles.Add(new KeyHoleInfo(x, GetFlippedY(y), pixelColor.A, pixelColor));
+                    doors.Add(new DoorInfo(x, GetFlippedY(y), pixelColor.A, pixelColor));
                 }
             }
         }
 
-        if (keyHoles.Count < keys.Count) DisplayWarning(Messages.KeysWithoutKeyHoleWarning);
+        if (doors.Count < keys.Count) DisplayWarning(Messages.KeysWithoutKeyHoleWarning);
 
-        foreach (var keyHole in keyHoles)
+        foreach (var door in doors)
         {
-            // TODO: error handling
-            GameObject holeObject = Spawn("Grounds/Key Hole", new Vector2(keyHole.x, keyHole.y));
+            GameObject holeObject = Spawn("Grounds/Door", new Vector2(door.x, door.y));
             
-            List<Coordinates> resKeys = new();
-            if (!keys.ContainsKey(keyHole.groupId))
-                DisplayWarning(Messages.KeyHoleWithoutKeysWarning(keyHole.x, keyHole.y));
-            else 
-                holeObject.GetComponent<KeyHoleController>().keys = keys[keyHole.groupId];
+            if (!keys.ContainsKey(door.groupId))
+                DisplayWarning(Messages.KeyHoleWithoutKeysWarning(door.x, door.y));
+            else
+                holeObject.GetComponent<DoorController>().keys = keys[door.groupId];
 
-            UnityEngine.Color lightColor = ParseToUnityColorForKeys(keyHole.lightColor);
+            UnityEngine.Color lightColor = ParseToUnityColorForKeys(door.lightColor);
             lightColor.a = 1;
-            holeObject.GetComponent<KeyHoleController>().lightColor = lightColor;
+            holeObject.GetComponent<DoorController>().lightColor = lightColor;
         }
     }
 

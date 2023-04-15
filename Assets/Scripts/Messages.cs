@@ -13,7 +13,7 @@ public static class Messages
         "There is not enough space for the exit. You have to leave a 2x2 pixels large space for it.";
 
     public const string KeysWithoutKeyHoleWarning =
-        "There are some keys, that don't have a key hole. Those have been ignored";
+        "There are some keys, that don't have a door. Those have been ignored";
 
     public const string PlayerCannotBeSpawned =
         "Player can't be spawned! There has to be one empty pixel above his spawning point.";
@@ -31,6 +31,6 @@ public static class Messages
 
     public static string KeyHoleWithoutKeysWarning(int x, int y)
     {
-        return "(" + x + ", " + y + "): A key hole on these coordinates has no keys assigned to it!";
+        return "(" + x + ", " + y + "): A door on these coordinates has no keys assigned to it!";
     }
 }

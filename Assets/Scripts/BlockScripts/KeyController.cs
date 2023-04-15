@@ -5,14 +5,14 @@ namespace BlockScripts
 {
     public class KeyController : MonoBehaviour
     {
-        public static readonly Dictionary<KeyHoleController, int> KeysCount = new();
+        public static readonly Dictionary<DoorController, int> KeysCount = new();
 
-        public KeyHoleController keyHoleController;
+        public DoorController doorController;
         
         private void Start()
         {
-            KeysCount.TryAdd(keyHoleController, 0);
-            KeysCount[keyHoleController]++;
+            KeysCount.TryAdd(doorController, 0);
+            KeysCount[doorController]++;
         }
 
         
@@ -21,7 +21,7 @@ namespace BlockScripts
             if (col.gameObject.CompareTag(Constants.PlayerTag))
             {
                 Destroy(gameObject);
-                KeysCount[keyHoleController]--;
+                KeysCount[doorController]--;
             }
         }
     }

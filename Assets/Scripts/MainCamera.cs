@@ -9,10 +9,7 @@ public class MainCamera : MonoBehaviour
     private float _currentCameraSize;
     private float _aspectRatio;
 
-    private float _minX;
-    private float _maxX;
-    private float _minY;
-    private float _maxY;
+    private float _minX, _maxX, _minY, _maxY;
 
     private Camera _camera;
 
@@ -45,7 +42,7 @@ public class MainCamera : MonoBehaviour
         if (Input.mouseScrollDelta.y != 0)
         {
             float newSize = _camera.orthographicSize - (Input.mouseScrollDelta.y * Constants.CameraSizeChange);
-            _camera.orthographicSize = Mathf.Clamp(newSize, 5f, _defaultCameraSize);
+            _currentCameraSize = _camera.orthographicSize = Mathf.Clamp(newSize, 5f, _defaultCameraSize);
             FocusPlayer(true);
         } else FocusPlayer(false);
     }
@@ -67,8 +64,6 @@ public class MainCamera : MonoBehaviour
 
     private void CalculateCameraLimits()
     {
-        _currentCameraSize = _camera.orthographicSize;
-        
         _minX = Constants.MapStartingCoordinate + _currentCameraSize * _aspectRatio;
         _maxX = Constants.MapStartingCoordinate + GlobalVariables.mapWidth - _currentCameraSize * _aspectRatio;
 

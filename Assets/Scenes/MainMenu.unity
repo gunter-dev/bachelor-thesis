@@ -173,8 +173,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 550.3668, y: -320}
-  m_SizeDelta: {x: 900.7639, y: 477.14}
+  m_AnchoredPosition: {x: 950.78, y: -534.85}
+  m_SizeDelta: {x: 1701.6, y: 906.84}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &33024214
 GameObject:
@@ -2315,7 +2315,11 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: TODO
+  m_text: "Each door has a colored light, that it emits. Keys, that unlock that specific
+    door emit the same color, as the door. There can be multiple doors emiting different
+    colors in one map. \n\nTo spawn a door, draw a pixel. The color of that pixel
+    will be the color of the light coming from the door. To spawn a key, draw a black
+    pixel with same alpha value as the door."
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -3197,7 +3201,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -9.22406, y: 5.151123}
+  m_AnchoredPosition: {x: -9.224121, y: 5.151123}
   m_SizeDelta: {x: -218.41821, y: -173.15991}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &489258166
@@ -3844,7 +3848,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 608.7528, y: -48.651306}
+  m_AnchoredPosition: {x: 608.7529, y: -48.651245}
   m_SizeDelta: {x: 1217.5127, y: 97.3017}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &533623756
@@ -4026,7 +4030,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -9.22406, y: 5.151123}
+  m_AnchoredPosition: {x: -9.224121, y: 5.151123}
   m_SizeDelta: {x: -218.41821, y: -173.15991}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &549572069
@@ -6317,7 +6321,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 608.7528, y: -48.651306}
+  m_AnchoredPosition: {x: 608.7529, y: -48.651245}
   m_SizeDelta: {x: 1217.5127, y: 97.3017}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &901375693
@@ -13725,7 +13729,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 608.7528, y: -48.651306}
+  m_AnchoredPosition: {x: 608.7529, y: -48.651245}
   m_SizeDelta: {x: 1217.5127, y: 97.3017}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1702391620
@@ -15245,7 +15249,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -9.22406, y: 5.151123}
+  m_AnchoredPosition: {x: -9.224121, y: 5.151123}
   m_SizeDelta: {x: -218.41821, y: -173.15991}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1871916872

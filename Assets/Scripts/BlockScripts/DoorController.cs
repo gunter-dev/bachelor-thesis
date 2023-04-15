@@ -4,7 +4,7 @@ using UnityEngine.Rendering.Universal;
 
 namespace BlockScripts
 {
-    public class KeyHoleController : MonoBehaviour
+    public class DoorController : MonoBehaviour
     {
         public List<Coordinates> keys;
 
@@ -22,7 +22,7 @@ namespace BlockScripts
             {
                 GameObject keyObject = Resources.Load<GameObject>("Key");
                 keyObject = Instantiate(keyObject, new Vector2(key.x, key.y), Quaternion.identity);
-                keyObject.GetComponent<KeyController>().keyHoleController = this;
+                keyObject.GetComponent<KeyController>().doorController = this;
 
                 keyObject.GetComponent<Light2D>().color = lightColor;
             }
