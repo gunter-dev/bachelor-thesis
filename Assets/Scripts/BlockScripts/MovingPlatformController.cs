@@ -5,12 +5,18 @@ namespace BlockScripts
 {
     public class MovingPlatformController : MonoBehaviour
     {
-        public List<PlatformInfo> path;
+        public List<Vector2> path;
 
+        [SerializeField] private bool manual;
+        [SerializeField] private Transform[] pathPoints;
+
+        public int size;
+        
         private int _nextIndex;
 
         private void Start()
         {
+            if (manual) InitializePath();
             InstantiateOtherPlatformParts();
         }
 
@@ -19,17 +25,23 @@ namespace BlockScripts
             MoveBlock();
         }
 
+        private void InitializePath()
+        {
+            foreach (var point in pathPoints)
+                path.Add(point.position);
+        }
+
         private void InstantiateOtherPlatformParts()
         {
-            for (short i = 1; i < path[_nextIndex].size; i++)
+            for (short i = 1; i < size; i++)
             {
                 var position = transform.position;
                 GameObject platform = Resources.Load<GameObject>("Grounds/Moving Platform");
                 platform = Instantiate(platform, new Vector3(position.x + i, position.y, 1), Quaternion.identity);
 
-                List<PlatformInfo> newPath = new List<PlatformInfo>();
+                List<Vector2> newPath = new List<Vector2>();
                 foreach (var item in path)
-                    newPath.Add(new PlatformInfo(item.x + i, item.y, item.colorCode, 0));
+                    newPath.Add(new Vector2(item.x + i, item.y));
 
                 platform.GetComponent<MovingPlatformController>().path = newPath;
             }
@@ -37,7 +49,7 @@ namespace BlockScripts
 
         private void MoveBlock()
         {
-            Vector2 nextPoint = new Vector2(path[_nextIndex].x, path[_nextIndex].y);
+            Vector2 nextPoint = path[_nextIndex];
 
             transform.position = Vector2.MoveTowards(transform.position, nextPoint, Constants.PlatformSpeed * Time.deltaTime);
 

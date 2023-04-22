@@ -5,7 +5,7 @@ namespace BlockScripts
 {
     public class ButtonController : MonoBehaviour
     {
-        public List<ElectricityInfo> affectedBlocks;
+        public List<ElectricityInfo> affectedBlocks = new();
         public List<GameObject> affectedGameObjects;
 
         private SpriteRenderer _spriteRenderer;

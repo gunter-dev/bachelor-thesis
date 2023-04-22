@@ -18,6 +18,13 @@ public static class Messages
     public const string PlayerCannotBeSpawned =
         "Player can't be spawned! There has to be one empty pixel above his spawning point.";
 
+    public const string InvalidDoor =
+        "The door is not the right size. You have to draw 2 pixels on top of each other to spawn doors.";
+
+    public const string MultipleSameColoredDoors = "There cannot be multiple doors with the same color!";
+
+    public const string PlayerNotSpawned = "There is no spawn point for the player! Add one to the main layer.";
+    
     public static string LayerError(string layerName)
     {
         return "Unknown layer name: '" + layerName + "'. This layer was ignored.";

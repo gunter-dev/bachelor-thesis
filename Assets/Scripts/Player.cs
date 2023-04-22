@@ -17,6 +17,8 @@ public class Player : MonoBehaviour
     private float _highJumpMultiplier = Constants.InitialMultiplier;
     private float _nightVisionSpeedMultiplier = Constants.InitialMultiplier;
 
+    [SerializeField] private bool isInMainMenu;
+    
     private bool _grounded;
     private bool _jumpAnimated;
     private bool _reversedGravity;
@@ -50,7 +52,7 @@ public class Player : MonoBehaviour
     void Update()
     {
         if (LobbyMenus.isPaused) return;
-        SwitchAbility();
+        if (!isInMainMenu) SwitchAbility();
         PlayerMovement();
         CalculateFlip();
         Animate();
@@ -120,7 +122,7 @@ public class Player : MonoBehaviour
             _jumpAnimated = false;
             PlaySound(_landSound);
         }
-        if (!_grounded) CheckPlayerIsOnMap();
+        if (!_grounded && !isInMainMenu) CheckPlayerIsOnMap();
 
         _xMovement = MovementSpeed();
         

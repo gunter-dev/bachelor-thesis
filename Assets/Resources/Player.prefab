@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 568197938020647637}
   - component: {fileID: -649138155222060401}
   - component: {fileID: 7096049999709670087}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Player
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -76,8 +76,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 34018153
-  m_SortingLayer: 2
+  m_SortingLayerID: -981971641
+  m_SortingLayer: 4
   m_SortingOrder: 0
   m_Sprite: {fileID: -888460569, guid: 2f17b82407ab2554d8bfda7cc395b129, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -169,7 +169,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 881a6490620e0d24f9c197d78387bf01, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  keysNeeded: 0
+  isInMainMenu: 0
 --- !u!114 &-649138155222060401
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -190,7 +190,7 @@ MonoBehaviour:
   m_Intensity: 1
   m_LightVolumeIntensity: 1
   m_LightVolumeIntensityEnabled: 0
-  m_ApplyToSortingLayers: 0000000027346d9d6913070273b4a7c2
+  m_ApplyToSortingLayers: 0000000027346d9d6913070273b4a7c2474d78c5
   m_LightCookieSprite: {fileID: 0}
   m_DeprecatedPointLightCookieSprite: {fileID: 0}
   m_LightOrder: 0

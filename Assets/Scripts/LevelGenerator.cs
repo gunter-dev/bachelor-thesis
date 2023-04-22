@@ -20,10 +20,9 @@ public class LevelGenerator : MonoBehaviour
     private int _mapHeight;
     private int[] _raster;
 
-    private GameObject _player;
-
     private bool _lightLayerPresent;
     private bool _exitSpawned;
+    private bool _playerSpawned;
 
     private ColorPrefab[] _colorMappings;
 
@@ -37,7 +36,7 @@ public class LevelGenerator : MonoBehaviour
         InstantiateColorMappings();
         ImportImageFromFile();
         GenerateLevel();
-
+        RenderBackground();
         SpawnCamera();
     }
 
@@ -129,6 +128,8 @@ public class LevelGenerator : MonoBehaviour
                 GenerateTile(x, y);
             }
         }
+        
+        if (!_playerSpawned) DisplayError(Messages.PlayerNotSpawned);
     }
 
     private void GenerateTile(int x, int y)
@@ -165,18 +166,16 @@ public class LevelGenerator : MonoBehaviour
             if (block.CompareTag(Constants.GravityBlockTag))
             {
                 if (GetFlippedY(y) == 0) return;
-                
-                if (GetFlippedY(y) == _mapHeight - 1 || GetPixelColor(x, y - 1).A != 0)
-                    FlipBlockOnY(block);
+                if (!IsPixelEmpty(x, y - 1)) FlipBlockOnY(block);
             }
             else if (block.CompareTag(Constants.PlayerTag))
             {
-                if (_player) DisplayError(Messages.MultipleCharacters);
-                if (GetFlippedY(y) == _mapHeight - 1 || GetPixelColor(x, y - 1).A != 0) {
+                if (_playerSpawned) DisplayError(Messages.MultipleCharacters);
+                if (!IsPixelEmpty(x, y - 1)) {
                     DisplayError(Messages.PlayerCannotBeSpawned);
                     return;
                 }
-                _player = block;
+                _playerSpawned = true;
             }
 
             return;
@@ -214,24 +213,20 @@ public class LevelGenerator : MonoBehaviour
 
     private void SpawnExit(int x, int y)
     {
-        if (_exitSpawned)
-        {
-            DisplayError(Messages.MultipleExits);
-            return;
-        }
+        if (_exitSpawned) DisplayError(Messages.MultipleExits);
 
         float resultX = x;
         float resultY = y;
 
-        if (x == _mapWidth - 1 || GetPixelColor(x + 1, y).A != 0)
+        if (!IsPixelEmpty(x + 1, y))
         {
-            if (x == 0 || GetPixelColor(x - 1, y).A != 0) DisplayError(Messages.NotEnoughSpaceForExit);
+            if (!IsPixelEmpty(x - 1, y)) DisplayError(Messages.NotEnoughSpaceForExit);
             resultX += Constants.MapStartingCoordinate;
         }
         
-        if (y == _mapHeight - 1 || GetPixelColor(x, y + 1).A != 0)
+        if (!IsPixelEmpty(x, y + 1))
         {
-            if (y == 0 || GetPixelColor(x, y - 1).A != 0) DisplayError(Messages.NotEnoughSpaceForExit);
+            if (!IsPixelEmpty(x, y - 1)) DisplayError(Messages.NotEnoughSpaceForExit);
             resultY += Constants.MapStartingCoordinate;
         }
 
@@ -279,6 +274,7 @@ public class LevelGenerator : MonoBehaviour
     private void GenerateMovingPlatforms()
     {
         var platforms = new Dictionary<int, List<PlatformInfo>>();
+        int size = 0;
         for (int x = 0; x < _mapWidth; x++)
         {
             for (int y = 0; y < _mapHeight; y++)
@@ -287,9 +283,13 @@ public class LevelGenerator : MonoBehaviour
                 if (pixelColor.A == 0) continue;
 
                 platforms.TryAdd(pixelColor.R, new List<PlatformInfo>());
-                platforms[pixelColor.R].Add(new PlatformInfo(x, GetFlippedY(y), pixelColor.B, pixelColor.G));
+                platforms[pixelColor.R].Add(new PlatformInfo(x, GetFlippedY(y), pixelColor.B));
+
+                if (size == 0) size = pixelColor.G;
             }
         }
+        
+        if (size == 0) DisplayError("Invalid platform size! The size cannot be zero!");
 
         foreach (var platform in platforms)
         {
@@ -298,7 +298,15 @@ public class LevelGenerator : MonoBehaviour
             PlatformInfo first = platform.Value[0];
 
             GameObject platformObject = Spawn("Grounds/Moving Platform", new Vector3(first.x, first.y, 1));
-            platformObject.GetComponent<MovingPlatformController>().path = platform.Value;
+
+            List<Vector2> path = new List<Vector2>();
+
+            foreach (var point in platform.Value)
+                path.Add(new Vector2(point.x, point.y));
+
+            MovingPlatformController controller = platformObject.GetComponent<MovingPlatformController>();
+            controller.path = path;
+            controller.size = size;
         }
     }
 
@@ -321,7 +329,30 @@ public class LevelGenerator : MonoBehaviour
                 }
                 else
                 {
-                    doors.Add(new DoorInfo(x, GetFlippedY(y), pixelColor.A, pixelColor));
+                    bool aboveEmpty = IsPixelEmpty(x, y + 1);
+                    bool belowEmpty = IsPixelEmpty(x, y - 1);
+                    
+                    if (aboveEmpty && belowEmpty) DisplayError(Messages.InvalidDoor);
+                    
+                    else if (!aboveEmpty && !belowEmpty)
+                    {
+                        Color aboveColor = GetPixelColor(x, y + 1);
+                        Color belowColor = GetPixelColor(x, y - 1);
+                        
+                        if (aboveColor.A  == belowColor.A && !aboveColor.Equals(Color.Black))
+                            DisplayError(Messages.InvalidDoor);
+                    }
+                    
+                    else if (belowEmpty && GetPixelColor(x, y + 1).A == pixelColor.A)
+                    {
+                        if (doors.Find(door => door.groupId == pixelColor.A) != null)
+                            DisplayError(Messages.MultipleSameColoredDoors);
+                        
+                        doors.Add(new DoorInfo(x, GetFlippedY(y), pixelColor.A, pixelColor));
+                    }
+                    
+                    else if (!(aboveEmpty && GetPixelColor(x, y - 1).A == pixelColor.A)) 
+                        DisplayError(Messages.InvalidDoor);
                 }
             }
         }
@@ -330,7 +361,7 @@ public class LevelGenerator : MonoBehaviour
 
         foreach (var door in doors)
         {
-            GameObject holeObject = Spawn("Grounds/Door", new Vector2(door.x, door.y));
+            GameObject holeObject = Spawn("Grounds/Door", new Vector2(door.x, door.y - 0.5f));
             
             if (!keys.ContainsKey(door.groupId))
                 DisplayWarning(Messages.KeyHoleWithoutKeysWarning(door.x, door.y));
@@ -365,6 +396,33 @@ public class LevelGenerator : MonoBehaviour
         Light2D globalLight = Instantiate(Resources.Load<Light2D>("Global Light"), Vector3.zero, Quaternion.identity);
         if (!_lightLayerPresent) globalLight.intensity = 0.6f;
     }
+    
+    private void RenderBackground()
+    {
+        GameObject background = Resources.Load<GameObject>("ExtendableBackground");
+        SpriteRenderer backgroundSpriteRenderer = background.GetComponent<SpriteRenderer>();
+        Vector3 backgroundSize = backgroundSpriteRenderer.bounds.size;
+
+        Vector3 position = new Vector3(
+            (backgroundSize.x / 2) + Constants.MapStartingCoordinate,
+            (backgroundSize.y / 2) + Constants.MapStartingCoordinate,
+            0
+        );
+
+        while (position.x - backgroundSize.x / 2 < GlobalVariables.mapWidth)
+        {
+            while (position.y - backgroundSize.y / 2 < GlobalVariables.mapHeight)
+            {
+                Instantiate(background, position, Quaternion.identity);
+                position.y += backgroundSize.y;
+            }
+            
+            position.x += backgroundSize.x;
+            position.y = (backgroundSize.y / 2) + Constants.MapStartingCoordinate;
+        }
+        
+        background.transform.localScale = new Vector2(GlobalVariables.mapWidth / backgroundSize.x, GlobalVariables.mapHeight / backgroundSize.y);
+    }
 
     private void SpawnCamera()
     {
@@ -388,6 +446,12 @@ public class LevelGenerator : MonoBehaviour
         int green = Tiff.GetG(_raster[offset]);
         int blue = Tiff.GetB(_raster[offset]);
         return Color.FromArgb(alpha, red, green, blue);
+    }
+
+    private bool IsPixelEmpty(int x, int y)
+    {
+        if (x < 0 || y < 0 || x > _mapWidth - 1 || y > _mapHeight - 1) return false;
+        return GetPixelColor(x, y).A == 0;
     }
 
     private UnityEngine.Color ParseToUnityColor(Color srcColor)
