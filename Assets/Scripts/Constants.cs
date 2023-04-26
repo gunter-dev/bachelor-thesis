@@ -5,7 +5,6 @@ public static class Constants
     public const string GravityBlockTag = "Gravity";
     public const string AcceleratorTag = "Accelerator";
     public const string GroundTag = "Ground";
-    public const string IceTag = "Ice";
     public const string SlimeTag = "Slime";
     public const string SpikeTag = "Spike";
     public const string SideTag = "Side";
@@ -42,6 +41,7 @@ public static class Constants
     public const string Idle = "Idle";
     public const string Run = "Run";
     public const string Jump = "Jump";
+    public const string Death = "Death";
     
     // Button axis
     public const string Horizontal = "Horizontal";
@@ -52,7 +52,7 @@ public static class Constants
     public const float DistanceTolerance = 0.01f;
     
     // Scenes
-    public const string Game = "Scenes/LobbyScene";
+    public const string LocalLevel = "Scenes/LocalLevel";
     public const string MainMenu = "Scenes/MainMenu";
     public const string CreateLevelScene = "Scenes/CreateLevelScene";
     public const string ErrorScene = "Scenes/ErrorScene";

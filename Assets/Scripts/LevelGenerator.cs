@@ -26,9 +26,6 @@ public class LevelGenerator : MonoBehaviour
 
     private ColorPrefab[] _colorMappings;
 
-    private Vector2 _initialIcePosition;
-    private int _iceSize;
-
     public TMP_Text warningText;
 
     public void Start()
@@ -53,7 +50,6 @@ public class LevelGenerator : MonoBehaviour
             new (Color.FromArgb(255, 0, 0), "Player"),
             new (Color.FromArgb(255, 255, 255), "Grounds/Accelerator"),
             new (Color.FromArgb(0, 255, 0), "Grounds/Slime"),
-            new (Color.FromArgb(0, 255, 255), "Grounds/Ice Sprite"),
             new (Color.FromArgb(255, 0, 255), "Spike"),
             new (Color.FromArgb(0, 0, 255), "Grounds/Gravity"),
             new (Color.FromArgb(100, 0, 0), "Grounds/Box"),
@@ -147,15 +143,7 @@ public class LevelGenerator : MonoBehaviour
         {
             if (!colorMapping.color.Equals(pixelColor)) continue;
 
-            if (colorMapping.pathToPrefab == "Grounds/Ice Sprite") HandleIce(x, GetFlippedY(y));
-            else if (_iceSize > 0)
-            {
-                Vector2 position = new Vector2(_initialIcePosition.x + _iceSize / 2f + Constants.MapStartingCoordinate, _initialIcePosition.y);
-                GameObject ice = Spawn("Grounds/Ice Collider", position);
-                ice.transform.localScale = new Vector2(_iceSize, 1);
-                _iceSize = 0;
-            }
-            else if (colorMapping.pathToPrefab == "Exit")
+            if (colorMapping.pathToPrefab == "Exit")
             {
                 SpawnExit(x, y);
                 return;
@@ -203,12 +191,6 @@ public class LevelGenerator : MonoBehaviour
                 return "Grounds/Top " + randomValue;
         }
         return "Grounds/Grass Ground 1";
-    }
-
-    private void HandleIce(int x, int y)
-    {
-        if (_iceSize == 0) _initialIcePosition = new Vector2(x, y);
-        _iceSize++;
     }
 
     private void SpawnExit(int x, int y)
@@ -403,10 +385,9 @@ public class LevelGenerator : MonoBehaviour
         SpriteRenderer backgroundSpriteRenderer = background.GetComponent<SpriteRenderer>();
         Vector3 backgroundSize = backgroundSpriteRenderer.bounds.size;
 
-        Vector3 position = new Vector3(
+        Vector2 position = new Vector2(
             (backgroundSize.x / 2) + Constants.MapStartingCoordinate,
-            (backgroundSize.y / 2) + Constants.MapStartingCoordinate,
-            0
+            (backgroundSize.y / 2) + Constants.MapStartingCoordinate
         );
 
         while (position.x - backgroundSize.x / 2 < GlobalVariables.mapWidth)
@@ -420,9 +401,7 @@ public class LevelGenerator : MonoBehaviour
             position.x += backgroundSize.x;
             position.y = (backgroundSize.y / 2) + Constants.MapStartingCoordinate;
         }
-        
-        background.transform.localScale = new Vector2(GlobalVariables.mapWidth / backgroundSize.x, GlobalVariables.mapHeight / backgroundSize.y);
-    }
+    }   
 
     private void SpawnCamera()
     {

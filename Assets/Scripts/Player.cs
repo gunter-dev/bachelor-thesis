@@ -22,8 +22,8 @@ public class Player : MonoBehaviour
     private bool _grounded;
     private bool _jumpAnimated;
     private bool _reversedGravity;
-    private bool _sliding;
     private bool _isUnbreakable;
+    private bool _isDead;
 
     private AudioClip _stepSound;
     private AudioClip _jumpSound;
@@ -51,7 +51,7 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (LobbyMenus.isPaused) return;
+        if (LobbyMenus.isPaused || _isDead) return;
         if (!isInMainMenu) SwitchAbility();
         PlayerMovement();
         CalculateFlip();
@@ -120,16 +120,12 @@ public class Player : MonoBehaviour
         if (_grounded && _jumpAnimated)
         {
             _jumpAnimated = false;
-            PlaySound(_landSound);
+            if (_playerBody.velocity.y < 0) PlaySound(_landSound);
         }
         if (!_grounded && !isInMainMenu) CheckPlayerIsOnMap();
 
         _xMovement = MovementSpeed();
-        
-        if (_sliding && _playerBody.velocity.x < Constants.MovementSpeed && _grounded)
-            _playerBody.AddForce(new Vector2(_xMovement * 5f, 0f));
-        else if (!_sliding)
-            transform.position += Time.deltaTime * Constants.MovementSpeed * new Vector3(_xMovement, 0f, 0f);
+        transform.position += Time.deltaTime * Constants.MovementSpeed * new Vector3(_xMovement, 0f, 0f);
 
         if (Input.GetButtonDown(Constants.Jump) && _grounded) PlayerJump();
     }
@@ -192,7 +188,6 @@ public class Player : MonoBehaviour
         {
             if (col.gameObject.CompareTag(Constants.GravityBlockTag)) HandleGravityChange();
 
-            _sliding = col.gameObject.CompareTag(Constants.IceTag);
             _slowedDownSpeedMultiplier = col.gameObject.CompareTag(Constants.SlimeTag) ? Constants.SlowedDownSpeed : Constants.InitialMultiplier;
         }
 
@@ -217,7 +212,8 @@ public class Player : MonoBehaviour
 
     private void KillPlayer()
     {
-        Destroy(gameObject);
+        _isDead = true;
+        _animator.Play(Constants.Death);
         LobbyMenus.isPlayerDead = true;
     }
 
@@ -225,8 +221,12 @@ public class Player : MonoBehaviour
     {
         LayerMask layer = LayerMask.GetMask(Constants.GroundTag);
         Bounds bounds = _collider.bounds;
+
+        Vector3 origin = bounds.center - new Vector3(0, bounds.extents.y);
+        Vector2 size = new Vector2(0.1f, 0.1f);
         Vector2 direction = _reversedGravity ? Vector2.up : Vector2.down;
-        return Physics2D.BoxCast(bounds.center, bounds.size, 0f, direction, 0.1f, layer);
+
+        return Physics2D.BoxCast(origin, size, 0f, direction, 0.1f, layer);
     }
 
     // ReSharper disable once UnusedMember.Local

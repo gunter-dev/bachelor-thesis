@@ -14,7 +14,6 @@ namespace BlockScripts
             KeysCount.TryAdd(doorController, 0);
             KeysCount[doorController]++;
         }
-
         
         private void OnCollisionEnter2D(Collision2D col)
         {

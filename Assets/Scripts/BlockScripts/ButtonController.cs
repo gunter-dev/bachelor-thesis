@@ -23,7 +23,7 @@ namespace BlockScripts
         private void InstantiateAffectedBlocks()
         {
             foreach (var block in affectedBlocks)
-            { 
+            {
                 if (block.colorCode != 0)
                 {
                     Vector3 position = new Vector3(block.x, block.y, 1);

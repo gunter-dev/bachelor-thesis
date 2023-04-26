@@ -17,7 +17,7 @@ namespace MenuScripts
             
             GlobalVariables.pathToLevel = path[0];
             GlobalVariables.createLevelMode = createLevelMode;
-            SceneManager.LoadScene(createLevelMode ? Constants.CreateLevelScene : Constants.Game);
+            SceneManager.LoadScene(createLevelMode ? Constants.CreateLevelScene : Constants.LocalLevel);
         }
     }
 }
