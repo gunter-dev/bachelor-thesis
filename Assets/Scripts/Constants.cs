@@ -3,13 +3,10 @@ public static class Constants
     // Tags
     public const string PlayerTag = "Player";
     public const string GravityBlockTag = "Gravity";
-    public const string AcceleratorTag = "Accelerator";
     public const string GroundTag = "Ground";
     public const string SlimeTag = "Slime";
     public const string SpikeTag = "Spike";
-    public const string SideTag = "Side";
     public const string BoxTag = "Box";
-    public const string ButtonTag = "Button";
     public const string ExitTag = "Exit";
     
     // Level Layers

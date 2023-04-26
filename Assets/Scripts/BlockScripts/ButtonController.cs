@@ -27,7 +27,7 @@ namespace BlockScripts
                 if (block.colorCode != 0)
                 {
                     Vector3 position = new Vector3(block.x, block.y, 1);
-                    GameObject affected = Resources.Load<GameObject>("Grounds/Grass Ground 1");
+                    GameObject affected = Resources.Load<GameObject>("Grounds/Electricity");
                     affected = Instantiate(affected, position, Quaternion.identity);
                 
                     affectedGameObjects.Add(affected);

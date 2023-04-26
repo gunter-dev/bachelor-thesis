@@ -48,7 +48,7 @@ public class LevelGenerator : MonoBehaviour
         {
             new (Color.FromArgb(0, 0, 0), "Grounds/Grass Ground"),
             new (Color.FromArgb(255, 0, 0), "Player"),
-            new (Color.FromArgb(255, 255, 255), "Grounds/Accelerator"),
+            new (Color.FromArgb(255, 255, 255), "Grounds/Belt"),
             new (Color.FromArgb(0, 255, 0), "Grounds/Slime"),
             new (Color.FromArgb(255, 0, 255), "Spike"),
             new (Color.FromArgb(0, 0, 255), "Grounds/Gravity"),
