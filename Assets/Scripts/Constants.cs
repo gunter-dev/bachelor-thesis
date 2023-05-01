@@ -8,6 +8,11 @@ public static class Constants
     public const string SpikeTag = "Spike";
     public const string BoxTag = "Box";
     public const string ExitTag = "Exit";
+    public const string HUDTag = "HUD";
+    public const string SpeedTag = "Speed";
+    public const string JumpTag = "Jump";
+    public const string ShieldTag = "Shield";
+    public const string NightVisionTag = "Night Vision";
     
     // Level Layers
     public const string MainLayer = "main";
@@ -20,6 +25,7 @@ public static class Constants
     public const float MapStartingCoordinate = -0.5f;
     public const float CameraSizeChange = 0.7f;
     public const float CreateLevelPanelScreenPercentage = 100 / 1080f;
+    public const float MinCameraSize = 4f;
     public const float MaxCameraSize = 20f;
     
     // Player
@@ -33,7 +39,7 @@ public static class Constants
     public const float DefaultOuterLightRadius = 8f;
     public const float NightVisionLightRadius = 50f;
     public const float NightVisionSpeedMultiplier = 0.3f;
-    
+
     // Player animations
     public const string Idle = "Idle";
     public const string Run = "Run";
@@ -53,4 +59,18 @@ public static class Constants
     public const string MainMenu = "Scenes/MainMenu";
     public const string CreateLevelScene = "Scenes/CreateLevelScene";
     public const string ErrorScene = "Scenes/ErrorScene";
+    
+    // Players special skills
+    public enum PlayerSkills
+    {
+        Default,
+        HighSpeed,
+        HighJump,
+        Unbreakable,
+        NightVision
+    }
+    
+    // HUD
+    public const float ActiveTransparency = 0.8f;
+    public const float InactiveTransparency = 0.2f;
 }

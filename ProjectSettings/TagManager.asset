@@ -17,6 +17,11 @@ TagManager:
   - Button
   - Exit
   - Global Light
+  - HUD
+  - Speed
+  - Jump
+  - Night Vision
+  - Shield
   layers:
   - Default
   - TransparentFX

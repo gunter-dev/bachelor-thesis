@@ -23,11 +23,13 @@ public class Player : MonoBehaviour
     private bool _jumpAnimated;
     private bool _reversedGravity;
     private bool _isUnbreakable;
-    private bool _isDead;
+    private bool _ignoreInput;
 
     private AudioClip _stepSound;
     private AudioClip _jumpSound;
     private AudioClip _landSound;
+
+    public Constants.PlayerSkills activeSkill;
 
     private void Awake()
     {
@@ -37,8 +39,9 @@ public class Player : MonoBehaviour
         _collider = transform.GetComponent<BoxCollider2D>();
         _light = GetComponent<Light2D>();
         _audioSource = GetComponent<AudioSource>();
-        
+
         InitializeSounds();
+        InitializeGravity();
     }
 
     private void InitializeSounds()
@@ -51,7 +54,7 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (LobbyMenus.isPaused || _isDead) return;
+        if (LobbyMenus.isPaused || _ignoreInput) return;
         if (!isInMainMenu) SwitchAbility();
         PlayerMovement();
         CalculateFlip();
@@ -63,21 +66,21 @@ public class Player : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
             SwitchToDefaultAbilities();
-            Debug.Log("Default");
+            activeSkill = Constants.PlayerSkills.Default;
         }
         else if (Input.GetKeyDown(KeyCode.Alpha2))
         {
             // switch to high speed
             SwitchToDefaultAbilities();
             _highSpeedMultiplier = Constants.HighSpeedMultiplier;
-            Debug.Log("High speed");
+            activeSkill = Constants.PlayerSkills.HighSpeed;
         }
         else if (Input.GetKeyDown(KeyCode.Alpha3))
         {
             // switch to high jump
             SwitchToDefaultAbilities();
             _highJumpMultiplier = Constants.HighJumpMultiplier;
-            Debug.Log("High jump");
+            activeSkill = Constants.PlayerSkills.HighJump;
         }
         else if (Input.GetKeyDown(KeyCode.Alpha4))
         {
@@ -85,7 +88,7 @@ public class Player : MonoBehaviour
             SwitchToDefaultAbilities();
             _isUnbreakable = true;
             _nightVisionSpeedMultiplier = Constants.NightVisionSpeedMultiplier;
-            Debug.Log("Unbreakable");
+            activeSkill = Constants.PlayerSkills.Unbreakable;
         }
         else if (Input.GetKeyDown(KeyCode.Alpha5))
         {
@@ -96,7 +99,7 @@ public class Player : MonoBehaviour
             _light.color = Color.yellow;
             
             _nightVisionSpeedMultiplier = Constants.NightVisionSpeedMultiplier;
-            Debug.Log("Night vision");
+            activeSkill = Constants.PlayerSkills.NightVision;
         }
     }
 
@@ -132,7 +135,8 @@ public class Player : MonoBehaviour
 
     private void CheckPlayerIsOnMap()
     {
-        if (transform.position.y < Constants.MapStartingCoordinate || transform.position.y > GlobalVariables.mapHeight) 
+        if (transform.position.y < Constants.MapStartingCoordinate && !_reversedGravity 
+            || transform.position.y > GlobalVariables.mapHeight && _reversedGravity) 
             KillPlayer();
     }
 
@@ -199,8 +203,16 @@ public class Player : MonoBehaviour
         else if (col.gameObject.CompareTag(Constants.ExitTag))
         {
             LobbyMenus.playerWon = true;
-            Destroy(gameObject);
+            _ignoreInput = true;
+            _animator.Play(Constants.Idle);
         }
+    }
+
+    private void InitializeGravity()
+    {
+        _reversedGravity = false;
+        Physics2D.gravity = new Vector2(0, -9.8f);
+        _spriteRenderer.flipY = false;
     }
 
     private void HandleGravityChange()
@@ -212,7 +224,7 @@ public class Player : MonoBehaviour
 
     private void KillPlayer()
     {
-        _isDead = true;
+        _ignoreInput = true;
         _animator.Play(Constants.Death);
         LobbyMenus.isPlayerDead = true;
     }
@@ -222,7 +234,7 @@ public class Player : MonoBehaviour
         LayerMask layer = LayerMask.GetMask(Constants.GroundTag);
         Bounds bounds = _collider.bounds;
 
-        Vector3 origin = bounds.center - new Vector3(0, bounds.extents.y);
+        Vector3 origin = bounds.center + new Vector3(0, bounds.extents.y) * (_reversedGravity ? 1 : -1);
         Vector2 size = new Vector2(0.1f, 0.1f);
         Vector2 direction = _reversedGravity ? Vector2.up : Vector2.down;
 

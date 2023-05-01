@@ -20,7 +20,14 @@ namespace MenuScripts
 
         void Update()
         {
-            if (Input.GetKeyDown(KeyCode.Escape) && !deathScreen.activeSelf)
+            if (deathScreen.activeSelf || winScreen.activeSelf)
+            {
+                if (_deathScreenFade) DisplayDeathScreen();
+                if (_winScreenFade) DisplayWinScreen();
+                return;
+            }
+            
+            if (Input.GetKeyDown(KeyCode.Escape))
             {
                 if (isPaused) Resume();
                 else Pause();
@@ -32,7 +39,6 @@ namespace MenuScripts
                 isPlayerDead = false;
                 _deathScreenFade = true;
             }
-            if (_deathScreenFade) DisplayDeathScreen();
 
             if (playerWon)
             {
@@ -40,8 +46,6 @@ namespace MenuScripts
                 playerWon = false;
                 _winScreenFade = true;
             }
-
-            if (_winScreenFade) DisplayWinScreen();
         }
         
         private void DisplayDeathScreen()
@@ -61,6 +65,11 @@ namespace MenuScripts
             pauseMenu.SetActive(true);
             Time.timeScale = 0f;
             isPaused = true;
+        }
+
+        public void Next()
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
         }
 
         public void Resume()

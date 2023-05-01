@@ -376,7 +376,7 @@ public class LevelGenerator : MonoBehaviour
     private void GenerateGlobalLight()
     {
         Light2D globalLight = Instantiate(Resources.Load<Light2D>("Global Light"), Vector3.zero, Quaternion.identity);
-        if (!_lightLayerPresent) globalLight.intensity = 0.6f;
+        if (!_lightLayerPresent) globalLight.intensity = 0.8f;
     }
     
     private void RenderBackground()
@@ -415,6 +415,12 @@ public class LevelGenerator : MonoBehaviour
         float screenAspectRatio = (float)Screen.width / Screen.height;
         
         mainCamera.orthographicSize = (_mapHeight / 2f) * (mapAspectRatio / screenAspectRatio);
+        if (mainCamera.orthographicSize > _mapHeight / 2f) mainCamera.orthographicSize = _mapHeight / 2f;
+    }
+
+    public void Back()
+    {
+        SceneManager.LoadScene(Constants.MainMenu);
     }
 
     private Color GetPixelColor(int x, int y)

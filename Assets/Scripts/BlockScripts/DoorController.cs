@@ -8,11 +8,13 @@ namespace BlockScripts
     {
         public List<Coordinates> keys;
 
+        [SerializeField] private bool manual;
+
         public Color lightColor;
 
         private void Start()
         {
-            InstantiateKeys();
+            if (!manual) InstantiateKeys();
             SetColor();
         }
 

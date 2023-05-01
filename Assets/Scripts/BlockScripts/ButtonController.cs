@@ -13,6 +13,9 @@ namespace BlockScripts
         public Sprite unpressedTexture;
         public Sprite pressedTexture;
 
+        private bool _pressed;
+        private GameObject _triggerObject;
+
         // Start is called before the first frame update
         private void Start()
         {
@@ -35,9 +38,11 @@ namespace BlockScripts
             }
         }
 
-        private void HandlePressed()
+        private void HandlePressed(GameObject triggerObject)
         {
             _spriteRenderer.sprite = pressedTexture;
+            _pressed = true;
+            _triggerObject = triggerObject;
         
             foreach (var affectedObject in affectedGameObjects)
                 affectedObject.SetActive(false);
@@ -46,19 +51,20 @@ namespace BlockScripts
         private void HandleRelease()
         {
             _spriteRenderer.sprite = unpressedTexture;
+            _pressed = false;
         
             foreach (var affectedObject in affectedGameObjects)
                 affectedObject.SetActive(true);
         }
     
-        private void OnCollisionEnter2D()
+        private void OnCollisionEnter2D(Collision2D col)
         {
-            HandlePressed();
+            if (!_pressed) HandlePressed(col.gameObject);
         }
     
-        private void OnCollisionExit2D()
+        private void OnCollisionExit2D(Collision2D col)
         {
-            HandleRelease();
+            if (col.gameObject == _triggerObject) HandleRelease();
         }
     }
 }

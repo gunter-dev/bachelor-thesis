@@ -13,8 +13,6 @@ public class MainCamera : MonoBehaviour
 
     private Camera _camera;
 
-    private Vector3 _velocity = Vector3.zero;
-
     [SerializeField] private float mapWidth, mapHeight;
 
     void Start()
@@ -48,24 +46,23 @@ public class MainCamera : MonoBehaviour
         if (Input.mouseScrollDelta.y != 0)
         {
             float newSize = _camera.orthographicSize - (Input.mouseScrollDelta.y * Constants.CameraSizeChange);
-            _currentCameraSize = _camera.orthographicSize = Mathf.Clamp(newSize, 5f, _defaultCameraSize);
-            FocusPlayer(true);
-        } else FocusPlayer(false);
+            _currentCameraSize = _camera.orthographicSize = Mathf.Clamp(newSize, Constants.MinCameraSize, _defaultCameraSize);
+        }
+        
+        FocusPlayer();
     }
 
-    private void FocusPlayer(bool afterZoom)
+    private void FocusPlayer()
     {
         CalculateCameraLimits();
         
-        var current = _cameraPosition = transform.position;
+        _cameraPosition = transform.position;
         Vector3 playerPosition = _playerTransform.position;
 
         _cameraPosition.x = Mathf.Clamp(playerPosition.x, _minX, _maxX);
         _cameraPosition.y = Mathf.Clamp(playerPosition.y, _minY, _maxY);
 
-        transform.position = afterZoom 
-            ? _cameraPosition
-            : Vector3.SmoothDamp(current, _cameraPosition, ref _velocity, 0.5f);
+        transform.position = _cameraPosition;
     }
 
     private void CalculateCameraLimits()
