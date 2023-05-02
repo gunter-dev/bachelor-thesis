@@ -52,6 +52,7 @@ namespace BlockScripts
         {
             _spriteRenderer.sprite = unpressedTexture;
             _pressed = false;
+            _triggerObject = null;
         
             foreach (var affectedObject in affectedGameObjects)
                 affectedObject.SetActive(true);
