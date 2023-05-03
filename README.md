@@ -57,6 +57,7 @@ Some assets were downloaded from the Unity Asset Store:
 * Player animations - https://assetstore.unity.com/packages/2d/characters/ethan-the-hero-237992
 * Level background textures - https://assetstore.unity.com/packages/2d/environments/hand-painted-platformer-dungeon-240848
 * Footsteps sounds - https://assetstore.unity.com/packages/audio/sound-fx/foley/footsteps-essentials-189879
+* Keys animation - https://drxwat.itch.io/pixel-art-key
 
 Packages, that were used in this project:
 
