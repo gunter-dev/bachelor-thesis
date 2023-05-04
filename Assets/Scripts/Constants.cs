@@ -8,11 +8,6 @@ public static class Constants
     public const string SpikeTag = "Spike";
     public const string BoxTag = "Box";
     public const string ExitTag = "Exit";
-    public const string HUDTag = "HUD";
-    public const string SpeedTag = "Speed";
-    public const string JumpTag = "Jump";
-    public const string ShieldTag = "Shield";
-    public const string NightVisionTag = "Night Vision";
     
     // Level Layers
     public const string MainLayer = "main";
@@ -53,7 +48,9 @@ public static class Constants
     // Special blocks
     public const float PlatformSpeed = 5;
     public const float DistanceTolerance = 0.01f;
-    
+    public const float DisappearingTime = 2;
+    public const float ReappearingTime = 5;
+
     // Scenes
     public const string LocalLevel = "Scenes/LocalLevel";
     public const string MainMenu = "Scenes/MainMenu";

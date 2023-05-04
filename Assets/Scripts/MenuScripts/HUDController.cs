@@ -21,6 +21,7 @@ namespace MenuScripts
         {
             _active = new Color(1, 1, 1, Constants.ActiveTransparency);
             _inactive = new Color(1, 1, 1, Constants.InactiveTransparency);
+            SkillChanged(Constants.PlayerSkills.Default);
         }
 
         private void Update()

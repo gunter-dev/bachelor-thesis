@@ -8,8 +8,6 @@ namespace BlockScripts
         private BoxCollider2D _boxCollider;
     
         private float _time;
-        private const float DisappearingTime = 2;
-        private const float ReappearingTime = 5;
         private bool _startedDisappearing;
         private bool _disappeared;
 
@@ -25,14 +23,14 @@ namespace BlockScripts
             {
                 _time += Time.deltaTime;
             
-                UpdateAlphaChannel(Time.deltaTime / DisappearingTime);
+                UpdateAlphaChannel(Time.deltaTime / Constants.DisappearingTime);
 
-                if (_time >= DisappearingTime)
+                if (_time >= Constants.DisappearingTime)
                 {
                     _disappeared = true;
                     _startedDisappearing = false;
                     _time = 0;
-                    gameObject.SetActive(false);
+                    _spriteRenderer.enabled = false;
                     _boxCollider.size = new Vector2(0, 0);
                 }
             } 
@@ -40,12 +38,12 @@ namespace BlockScripts
             {
                 _time += Time.deltaTime;
 
-                if (_time >= ReappearingTime)
+                if (_time >= Constants.ReappearingTime)
                 {
                     _disappeared = false;
                     _time = 0;
-                    gameObject.SetActive(true);
-                    _boxCollider.size = new Vector2(1, 1);
+                    _spriteRenderer.enabled = true;
+                    _boxCollider.size = new Vector2(1, 0.3f);
                     UpdateAlphaChannel(-1);
                 }
             }

@@ -42,6 +42,7 @@ public class Player : MonoBehaviour
 
         InitializeSounds();
         InitializeGravity();
+        SwitchToDefaultAbilities();
     }
 
     private void InitializeSounds()
@@ -66,7 +67,6 @@ public class Player : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
             SwitchToDefaultAbilities();
-            activeSkill = Constants.PlayerSkills.Default;
         }
         else if (Input.GetKeyDown(KeyCode.Alpha2))
         {
@@ -115,6 +115,8 @@ public class Player : MonoBehaviour
         _nightVisionSpeedMultiplier = Constants.InitialMultiplier;
 
         _isUnbreakable = false;
+        
+        activeSkill = Constants.PlayerSkills.Default;
     }
 
     private void PlayerMovement()
