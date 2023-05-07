@@ -2,6 +2,7 @@ using MenuScripts;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 
+// A class controlling the player, its movement, animation...
 public class Player : MonoBehaviour
 {
     private Rigidbody2D _playerBody;
@@ -103,6 +104,7 @@ public class Player : MonoBehaviour
         }
     }
 
+    // Disables all abilities
     private void SwitchToDefaultAbilities()
     {
         _highSpeedMultiplier = Constants.InitialMultiplier;
@@ -124,14 +126,20 @@ public class Player : MonoBehaviour
         _grounded = IsGrounded();
         if (_grounded && _jumpAnimated)
         {
+            // player landed
             _jumpAnimated = false;
             if (_playerBody.velocity.y < 0) PlaySound(_landSound);
         }
+        
+        // if player is not grounded, it needs to be checked, if he is on the map
         if (!_grounded && !isInMainMenu) CheckPlayerIsOnMap();
 
         _xMovement = MovementSpeed();
+        
+        // moving the player
         transform.position += Time.deltaTime * Constants.MovementSpeed * new Vector3(_xMovement, 0f, 0f);
 
+        // if the player isn't grounded, he cannot jump
         if (Input.GetButtonDown(Constants.Jump) && _grounded) PlayerJump();
     }
 

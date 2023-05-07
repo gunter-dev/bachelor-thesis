@@ -12,6 +12,8 @@ using UnityEngine.SceneManagement;
 using GameObject = UnityEngine.GameObject;
 using Random = UnityEngine.Random;
 
+// A class, that is placed onto an empty GameObject. If this GameObject is in the scene,
+// it starts generating a level from a selected image.
 public class LevelGenerator : MonoBehaviour
 {
     private Tiff _levelImage;
@@ -44,6 +46,7 @@ public class LevelGenerator : MonoBehaviour
 
     private void InstantiateColorMappings()
     {
+        // color mappings, that are used while generating the main layer
         _colorMappings = new ColorPrefab[]
         {
             new (Color.FromArgb(0, 0, 0), "Grounds/Grass Ground"),
@@ -75,6 +78,7 @@ public class LevelGenerator : MonoBehaviour
         } else DisplayError(GlobalVariables.pathToLevel + Messages.FileOpeningError);
     }
 
+    // Loops through all the layers and calls respective functions.
     private void GenerateLevel()
     {
         for (short directory = 0; directory < _levelImage.NumberOfDirectories(); ++directory)
@@ -128,6 +132,9 @@ public class LevelGenerator : MonoBehaviour
         if (!_playerSpawned) DisplayError(Messages.PlayerNotSpawned);
     }
 
+    // While generating the main layer, this function is called for every coordinate.
+    // It determines whether a block should be spawned at this position and if so, which
+    // one should it be.
     private void GenerateTile(int x, int y)
     {
         Color pixelColor = GetPixelColor(x, y);
@@ -172,6 +179,9 @@ public class LevelGenerator : MonoBehaviour
         DisplayWarning(Messages.LayerCoordinatesWarning("Main layer", x, y));
     }
 
+    // A function, that will spawn a regular block - ground, left wall, right wall, or top.
+    // For each block its variant is randomly selected. That is because each block has 
+    // multiple variants, that slightly differ in appearance.
     private string GetRegularBlock(int blue)
     {
         int randomValue;
@@ -193,6 +203,7 @@ public class LevelGenerator : MonoBehaviour
         return "Grounds/Grass Ground 1";
     }
 
+    // Exit spawning. The exit needs to have enough space around itself to be spawned.
     private void SpawnExit(int x, int y)
     {
         if (_exitSpawned) DisplayError(Messages.MultipleExits);
@@ -218,6 +229,7 @@ public class LevelGenerator : MonoBehaviour
         _exitSpawned = true;
     }
 
+    // A function used for gravity blocks. When they are on the top, they need to be flipped.
     private void FlipBlockOnY(GameObject block)
     {
         block.GetComponent<SpriteRenderer>().flipY = true;
@@ -227,9 +239,12 @@ public class LevelGenerator : MonoBehaviour
         col.offset = offset;
     }
 
+    // Electricity layer processing.
     private void GenerateElectricity()
     {
         var blocks = new Dictionary<int, List<ElectricityInfo>>();
+        
+        // Save all blocks to the dictionary.
         for (int x = 0; x < _mapWidth; x++)
         {
             for (int y = 0; y < _mapHeight; y++)
@@ -242,6 +257,7 @@ public class LevelGenerator : MonoBehaviour
             }
         }
 
+        // Process the dictionary and spawn respective blocks.
         foreach (var block in blocks)
         {
             block.Value.Sort((l, r) => l.colorCode.CompareTo(r.colorCode));
@@ -253,10 +269,13 @@ public class LevelGenerator : MonoBehaviour
         }
     }
 
+    // Moving platforms layer processing.
     private void GenerateMovingPlatforms()
     {
         var platforms = new Dictionary<int, List<PlatformInfo>>();
         int size = 0;
+        
+        // Fill the platforms dictionary and get the size of the platform.
         for (int x = 0; x < _mapWidth; x++)
         {
             for (int y = 0; y < _mapHeight; y++)
@@ -273,6 +292,7 @@ public class LevelGenerator : MonoBehaviour
         
         if (size == 0) DisplayError("Invalid platform size! The size cannot be zero!");
 
+        // Spawn all platforms.
         foreach (var platform in platforms)
         {
             platform.Value.Sort((l, r) => l.colorCode.CompareTo(r.colorCode));
@@ -292,11 +312,14 @@ public class LevelGenerator : MonoBehaviour
         }
     }
 
+    
+    // Keys layer processing.
     private void GenerateKeys()
     {
         var doors = new List<DoorInfo>();
         var keys = new Dictionary<int, List<Coordinates>>();
         
+        // Fill the doors list and keys dictionary.
         for (int x = 0; x < _mapWidth; x++)
         {
             for (int y = 0; y < _mapHeight; y++)
@@ -311,6 +334,7 @@ public class LevelGenerator : MonoBehaviour
                 }
                 else
                 {
+                    // First it needs to be checked, that the doors are exactly 2 pixels above each other.
                     bool aboveEmpty = IsPixelEmpty(x, y + 1);
                     bool belowEmpty = IsPixelEmpty(x, y - 1);
                     
@@ -341,6 +365,7 @@ public class LevelGenerator : MonoBehaviour
 
         if (doors.Count < keys.Count) DisplayWarning(Messages.KeysWithoutKeyHoleWarning);
 
+        // Spawn doors and keys
         foreach (var door in doors)
         {
             GameObject holeObject = Spawn("Grounds/Door", new Vector2(door.x, door.y - 0.5f));
@@ -356,6 +381,7 @@ public class LevelGenerator : MonoBehaviour
         }
     }
 
+    // Light layer processing.
     private void GenerateLights()
     {
         for (int x = 0; x < _mapWidth; x++)
@@ -379,6 +405,7 @@ public class LevelGenerator : MonoBehaviour
         if (!_lightLayerPresent) globalLight.intensity = 0.8f;
     }
     
+    // Render background to fill the whole map area.
     private void RenderBackground()
     {
         GameObject background = Resources.Load<GameObject>("ExtendableBackground");
@@ -403,6 +430,7 @@ public class LevelGenerator : MonoBehaviour
         }
     }   
 
+    // Spawn camera and calculate its size.
     private void SpawnCamera()
     {
         // z is -10 because the camera needs to be position "in front" of everything else
@@ -449,6 +477,7 @@ public class LevelGenerator : MonoBehaviour
         return new UnityEngine.Color((float)srcColor.R / srcColor.A, (float)srcColor.G / srcColor.A, (float)srcColor.B / srcColor.A, 1);
     }
 
+    // The y axis needs to be flipped, because the input image has it reversed.
     private int GetFlippedY(int y)
     {
         return _mapHeight - 1 - y;
@@ -473,16 +502,5 @@ public class LevelGenerator : MonoBehaviour
     {
         GlobalVariables.errorMessage = error;
         SceneManager.LoadScene(Constants.ErrorScene);
-    }
-
-    // ReSharper disable once UnusedMember.Local
-    private void LogObject(Color obj)
-    {
-        foreach(PropertyDescriptor descriptor in TypeDescriptor.GetProperties(obj))
-        {
-            string propName = descriptor.Name;
-            object value = descriptor.GetValue(obj);
-            Debug.Log(propName + ": " + value);
-        }
     }
 }

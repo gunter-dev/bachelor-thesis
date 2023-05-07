@@ -1,5 +1,6 @@
 using Color = System.Drawing.Color;
 
+// A class used by the level generator. It contains mapping of blocks to their assigned color.
 [System.Serializable]
 public class ColorPrefab
 {

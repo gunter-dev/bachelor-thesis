@@ -1,5 +1,6 @@
 using UnityEngine;
 
+// A class that controls the movement and size of the camera.
 public class MainCamera : MonoBehaviour
 {
     private Transform _playerTransform;
@@ -52,6 +53,7 @@ public class MainCamera : MonoBehaviour
         FocusPlayer();
     }
 
+    // Get the camera to the position of the player, if the player is not out of the camera bounds.
     private void FocusPlayer()
     {
         CalculateCameraLimits();
