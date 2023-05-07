@@ -6,7 +6,7 @@ The game is available for download on https://skin-walker.itch.io/skinwalker.
 
 ## Author
 
-Name: Lukáš Vincenc
+Name: Lukáš Vincenc \
 Login: xvince01
 
 ## Building the game
